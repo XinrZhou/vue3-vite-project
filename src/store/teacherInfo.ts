@@ -12,29 +12,31 @@ export const teacherInfoStore = defineStore('teacherInfo', {
     actions: {
          //未选学生名单
          async getUnCheckedStuent(){
-            let result:any = await reqGetUnSelectedStudent()
-            if(result.data.code == 200){
+            try{
+                let result:any = await reqGetUnSelectedStudent()
                 this.unSelectedList = result.data.data.students
-            }else{
-                return Promise.reject(new Error('fail！'))
+            }catch(error:any){
+                ElMessage.error(error.message)
             }
         },
+
         //该导师学生名单
         async getStuent(){
-            let result:any = await reqGetStudent()
-            if(result.data.code == 200){
+            try{
+                let result:any = await reqGetStudent()
                 this.studentList = result.data.data.students
-            }else{
-                return Promise.reject(new Error('fail！'))
+            }catch(error:any){
+                ElMessage.error(error.message)
             }
         },
+
         //所有学生名单
         async getAllStudent(){
-            let result:any = await reqGetAllStudent()
-            if(result.data.code == 200){
+            try{
+                let result:any = await reqGetAllStudent()
                 this.allStudentList = result.data.data.students
-            }else{
-                return Promise.reject(new Error('fail！'))
+            }catch(error:any){
+                ElMessage.error(error.message)
             }
         }
     }

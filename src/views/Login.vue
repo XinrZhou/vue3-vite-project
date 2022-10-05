@@ -37,7 +37,7 @@
   import { useRouter } from 'vue-router';
   import {userInfoStore} from '@/store/userInfo'
   import { reactive } from 'vue'
-
+  
   const router = useRouter()
   const infoStore = userInfoStore()
 
@@ -46,12 +46,14 @@
     password: ''
   })
 
+
   let login = async()=>{
     try{
       await infoStore.goLogin(User)
       router.push('/home')
     }catch(error:any){
-      alert(error.message)
+      User.number = '',
+      User.password = ''
     }
 
   }

@@ -4,6 +4,7 @@ import {setToken,getToken} from '@/utils/token'
 import { setRole,getRole} from "@/utils/role";
 import { setUid,getUid} from "@/utils/uid";
 import { setPassword,getPassword} from "@/utils/password";
+import { ElMessage } from "element-plus";
 
 export const userInfoStore = defineStore('userInfo',{
     state:()=>{
@@ -19,8 +20,8 @@ export const userInfoStore = defineStore('userInfo',{
     actions:{
           //登录
           async goLogin(User:any){
-            let result:any = await reqGetLogin(User)
-            if(result.status == 200 && result.headers['token']){
+            try{
+                let result:any = await reqGetLogin(User)
                 setUid(User.number)
                 setPassword(User.password)
                 setToken(result.headers['token'])
@@ -29,33 +30,34 @@ export const userInfoStore = defineStore('userInfo',{
                 this.password = getPassword()
                 this.token = getToken()
                 this.getInfo()
-                return 'ok'
-            }else{
-                return Promise.reject(new Error('用户名或密码错误'))
+            }catch(error:any){
+                ElMessage.error(error.message)
+                return Promise.reject(new Error(error.message))
             }
         },
 
         //修改密码
         async changePwd(pwd:string){
-            let result:any = await reqChangePwd(pwd)
-            if(result.status==200){
-                alert(`您的新密码为${this.password}`)
-            }else{
-                return Promise.reject(new Error('修改密码失败'))
+            try{
+                let result:any = await reqChangePwd(pwd)
+                ElMessage.success(`您的新密码为${pwd}`)
+            }catch(error:any){
+                ElMessage.error(error.message)
             }
-            console.log(result)
         },
 
         //获取用户信息
         async getInfo(){
-            let result:any = await reqGetInfo()
-            if(result.status==200){
+            try{
+                let result:any = await reqGetInfo()
                 localStorage.setItem('NAME',result.data.data.user.name)
                 localStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
                 localStorage.setItem('STARTTIME',result.data.data.starttime)
                 this.startTime = localStorage.getItem('STARTTIME')||''
                 this.name=localStorage.getItem('NAME')||''
                 this.teacherName = localStorage.getItem('TEACHERNAME')||''
+            }catch(error:any){
+                ElMessage.error(error.message)
             }
         },
     }

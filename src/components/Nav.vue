@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang='ts'>
-  import {ref,onMounted} from 'vue'
+  import {onMounted} from 'vue'
   import Carousel from '@/components/Carousel.vue'
   import useGoPages from '@/hooks/useGoPages'
   import {userInfoStore} from '@/store/userInfo'

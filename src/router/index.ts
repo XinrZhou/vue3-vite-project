@@ -1,5 +1,6 @@
 import { createRouter,createWebHistory} from 'vue-router'
 import { getToken } from '@/utils/token'
+import { ElMessage  } from 'element-plus'
 
 const router = createRouter({
     history:createWebHistory(),
@@ -13,24 +14,30 @@ const router = createRouter({
             name:'selectcenter',
             path:'/selectcenter',
             component:()=>import('@/views/SelectCenter.vue'),
-            meta:{
-                isAuth:true
-            },
             children:[
                 {
                     name:'admin',
                     path:'admin',
-                    component:()=>import('@/views/Admin.vue')
+                    component:()=>import('@/views/Admin.vue'),
+                    meta:{
+                        isAuth:true
+                    }
                 },
                 {
                     name:'student',
                     path:'student',
-                    component:()=>import('@/views/Student.vue')
+                    component:()=>import('@/views/Student.vue'),
+                    meta:{
+                        isAuth:true
+                    }
                 },
                 {
                     name:'teacher',
                     path:'teacher',
-                    component:()=>import('@/views/Teacher.vue')
+                    component:()=>import('@/views/Teacher.vue'),
+                    meta:{
+                        isAuth:true
+                    }
                 }
             ]
         },
@@ -61,7 +68,7 @@ router.beforeEach((to,from,next)=>{
         if(getToken()){
             next()
         }else{
-            alert('您当前无权查看该页面,请先登录！')
+            ElMessage.error('您当前无权查看该页面,请先登录！')
             router.push('/login')
         }
     }else{
