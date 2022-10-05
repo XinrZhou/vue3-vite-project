@@ -8,7 +8,8 @@ export const studentInfoStore = defineStore('studentInfo', {
             teacherList: [] as any,
             isChecked: false,
             teacherName: '',
-            isLoaded: false
+            isLoaded: false,
+            isStart:false
         }
     },
     actions: {
@@ -16,6 +17,7 @@ export const studentInfoStore = defineStore('studentInfo', {
         async getTeacherList(){
             try{
                 let result:any = await reqGetTeacherList()
+                this.isStart = true
                 this.isLoaded = true
                 this.teacherList = result.data.data.teachers
             }catch(error:any){
@@ -29,6 +31,7 @@ export const studentInfoStore = defineStore('studentInfo', {
                 let result:any = await reqSelectTutor(tid)
                 this.teacherName = result.data.data.user.teacherName
                 this.isChecked = true
+                ElMessage.success('选择成功！')
             }catch(error:any){
                 ElMessage.error(error.message)
             }

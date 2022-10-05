@@ -14,25 +14,23 @@
 
 <script setup lang='ts'>
     import * as XLSX from 'xlsx'
-    import { ref } from 'vue'
-
-    let upload_file=ref('')
-    let excelData=ref([])
     const emits = defineEmits(['UploadData'])
 
     let loadFile = (file:any,fileList:any)=>{
-          upload_file=fileList[0].raw;
+          const upload_file=fileList[0].raw;
           const reader=new FileReader();
-          reader.readAsBinaryString(upload_file);  
+          reader.readAsBinaryString(new Blob([upload_file],{type: "application/vnd.ms-excel"}));  
           reader.onload=ev=>{
             try{
-              const f=ev.target.result;
-              const workbook=XLSX.read(f,{type:"binary"});
-              const wsname=workbook.SheetNames[0];
-              console.log(wsname);
-              const ws=XLSX.utils.sheet_to_json(workbook.Sheets[wsname],{header:1,defval:'#'});
-              excelData=ws;
-              emits('UploadData',excelData)
+              let f=ev.target
+              if(f){
+                const file=f.result;
+                const workbook=XLSX.read(file,{type:"binary"});
+                const wsname=workbook.SheetNames[0];
+                let ws=XLSX.utils.sheet_to_json(workbook.Sheets[wsname],{header:1,defval:'#'});
+                emits('UploadData',ws)
+              }
+              
             }
             catch(e){
               console.log(e);

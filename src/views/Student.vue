@@ -12,7 +12,7 @@
     </div>
 
     <!-- 导师列表 -->
-    <section class="tables" v-if="userInfo.teacherName=='undefined'">
+    <section class="tables" v-if="studentInfo.isStart&&userInfo.teacherName=='undefined'">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
@@ -79,13 +79,8 @@
 
     //选择导师
     let selectMyTutor = async () => {
-        try{
-            await studentInfo.selectTutor(tid)
-            alert('选择成功！')
-            location.reload()
-        }catch(error:any){
-            alert(error.message)
-        }
+        await studentInfo.selectTutor(tid)
+        location.reload()
     }
 
 </script>

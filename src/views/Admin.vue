@@ -159,6 +159,7 @@
 
   //获取upload中的数据
   let getUploadData = (value: any) => {
+    console.log('value',value)
     value.shift()
     uploadArr.value = value
     if (uploadArr.value[0][3]) {
