@@ -1,43 +1,37 @@
 <template>
-  <!-- login -->
-  <section class="main-banner">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="banner-content">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="banner-caption">
-                  <h4 style="text-align: center;"><em>登录</em></h4>
-                  <form>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">用户名：</label>
-                      <input type="email" class="form-control" aria-describedby="emailHelp" v-model="User.number">
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputPassword1">密码：</label>
-                      <input type="password" class="form-control" id="exampleInputPassword1" v-model="User.password">
-                    </div>
-                    <small id="emailHelp" class="form-text text-muted">初始用户名、密码为学工号</small>
-                    <div class="primary-button">
-                      <a @click="login">登录</a>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div id="login-wrapper">
+    <div id='stars'></div>
+    <div id='stars2'></div>
+    <div id='stars3'></div>
+    <div class="login-box">
+      <h2>东北林业大学毕设选导师系统</h2>
+      <form>
+        <div class="user-box">
+          <input autocomplete="new-password" type="text" v-model="User.number" required key="username-v3" />
+          <label>账号</label>
         </div>
-      </div>
+        <div class="user-box">
+          <input autocomplete="new-password" type="password" v-model="User.password" required key="password-v3" />
+          <label>密码</label>
+        </div>
+        <a style="left:240px;" @click="login">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          登录
+        </a>
+      </form>
     </div>
-  </section>
+  </div>
 </template>
 
-<script setup lang='ts'>
-  import { useRouter } from 'vue-router';
-  import {userInfoStore} from '@/store/userInfo'
-  import { reactive } from 'vue'
-  
+<script lang="ts" setup>
+  import { useRouter } from 'vue-router'
+  import { userInfoStore } from '@/store/userInfo'
+  import { reactive, onMounted } from 'vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+
   const router = useRouter()
   const infoStore = userInfoStore()
 
@@ -46,20 +40,42 @@
     password: ''
   })
 
-
-  let login = async()=>{
-    try{
+  let login = async () => {
+    try {
       await infoStore.goLogin(User)
-      router.push('/home')
-    }catch(error:any){
+      switch (infoStore.role) {
+        case 'ppYMg':
+          router.push('/admin')
+          break;
+        case 'Yo87M':
+          router.push('/student')
+          break;
+        case 'nU0vt':
+          router.push('/teacher')
+          break;
+      }
+      if (User.password == User.number ) {
+        ElMessageBox.prompt('Please reset your password！', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+        })
+          .then(({ value }) => {
+            infoStore.changePwd(value)
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: 'Reset fail',
+            })
+          })
+      }
+    } catch (error: any) {
       User.number = '',
       User.password = ''
     }
-
   }
-
 </script>
 
 <style scoped>
-
+  @import url('@/assets/css/login.css');
 </style>

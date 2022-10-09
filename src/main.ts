@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp} from 'vue'
 import App from './App.vue'
 //Element-UI
 import ElementPlus from 'element-plus'
@@ -17,4 +17,5 @@ app.use(state)
 app.use(ElementPlus)
 
 app.mount('#app')
+
 

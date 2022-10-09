@@ -1,173 +1,139 @@
 <template>
-    <div class="page-heading">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h1>选择中心</h1>
-                    <p>本年度选导师系统开放时间：<strong>{{userInfo.startTime}}</strong></p>
-                </div>
-            </div>
-        </div>
+    <div class="common-layout">
+        <el-container>
+            <el-header>
+                <Header />
+            </el-header>
+            <el-main>
+                <el-card class="box-card">
+                    <div class="demo-collapse">
+                        <el-collapse >
+                            <el-row>
+                                <el-col :span="1">
+                                    <el-icon><StarFilled /></el-icon>
+                                </el-col>
+                                <el-col :span="23">
+                                    <el-collapse-item title="我的学生" name="3">
+                                        <div>
+                                            {{tableData2.length==0?'':tableData2}}
+                                        </div>
+                                    </el-collapse-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="1">
+                                    <el-icon><Search /></el-icon>
+                                </el-col>
+                                <el-col :span="23">
+                                    <el-collapse-item title="未选学生名单" name="1">
+                                        <div>
+                                            {{tableData1.length==0?'':tableData1}}
+                                        </div>
+                                    </el-collapse-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="1">
+                                    <el-icon><Link /></el-icon>
+                                </el-col>
+                                <el-col :span="23">
+                                    <el-collapse-item title="导出毕设学生表格" name="2" @click="exportTable()">
+                                    </el-collapse-item>
+                                </el-col>
+                            </el-row>
+                        </el-collapse>
+                    </div>
+                </el-card>
+            </el-main>
+            <el-footer>
+                <el-row>
+                    <el-col :span="24">
+                        <div style="text-align: center;">Design:2020-软件工程2班 周馨睿</div>
+                    </el-col>
+                </el-row>
+            </el-footer>
+        </el-container>
     </div>
-
-    <!-- 未选名单 -->
-    <section class="simple-post">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12" v-show="!isLoding">
-                    <div class="section-heading">
-                        <h2>未选名单</h2>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <el-table ref="singleTable" :data="tableData1" highlight-current-row style="width: 100%"
-                                height="280" id="unSelectedStudent">
-                                <el-table-column type="index" width="100">
-                                </el-table-column>
-                                <el-table-column property="name" label="姓名" width="160">
-                                </el-table-column>
-                                <el-table-column property="number" label="学号" width="200">
-                                </el-table-column>
-                            </el-table>
-                            <button type="button" class="btn"
-                                @click="exportTable('unSelectedStudent','未选学生名单')">导出表格</button>
-                        </div>
-                        <div class="col-md-6">
-                            <figure class="figure">
-                                <img src="../assets/images/form1.jpg" class="figure-img img-fluid rounded" alt="...">
-                            </figure>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 已选名单 -->
-    <section class="simple-post">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12" v-show="!isLoding">
-                    <div class="section-heading">
-                        <h2>我的学生</h2>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <figure class="figure">
-                                <img src="../assets/images/form2.jpg" class="figure-img img-fluid rounded" alt="...">
-                            </figure>
-                        </div>
-                        <div class="col-md-6">
-                            <el-table ref="singleTable" :data="tableData2" highlight-current-row style="width: 100%"
-                                height="280" id="myStudent">
-                                <el-table-column type="index" width="60">
-                                </el-table-column>
-                                <el-table-column property="name" label="姓名" width="150">
-                                </el-table-column>
-                                <el-table-column property="number" label="学号" width="180">
-                                </el-table-column>
-                                <el-table-column property="teacherName" label="导师" width="180">
-                                </el-table-column>
-                            </el-table>
-                            <button type="button" class="btn" @click="exportTable('myStudent','我的学生')">导出表格</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 所有学生选择情况 -->
-    <section class="simple-post">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12" v-show="!isLoding">
-                    <div class="section-heading">
-                        <h2>所有学生选择情况</h2>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <el-table ref="exportTableRef" :data="tableData3" highlight-current-row style="width: 100%"
-                                height="280" id="allStudent">
-                                <el-table-column type="index" width="60">
-                                </el-table-column>
-                                <el-table-column property="name" label="姓名" width="75">
-                                </el-table-column>
-                                <el-table-column property="number" label="学号" width="120">
-                                </el-table-column>
-                                <el-table-column property="teacherName" label="导师" width="75">
-                                </el-table-column>
-                                <el-table-column property="selectTime" label="选择时间" width="200">
-                                </el-table-column>
-                            </el-table>
-                            <button link="" type="button" class="btn"
-                                @click="exportTable('allStudent','所有学生导师信息')">导出表格</button>
-                        </div>
-                        <div class="col-md-6">
-                            <figure class="figure">
-                                <img src="../assets/images/form3.jpg" class="figure-img img-fluid rounded" alt="...">
-                            </figure>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div>
+    </div>
 </template>
 
-<script setup lang='ts'>
+<script lang="ts" setup>
+    import Header from '@/components/Header.vue'
     import FileSaver from 'file-saver'
     import * as XLSX from 'xlsx';
     import { toRaw, ref, nextTick } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
+    import { Link,Search,StarFilled } from '@element-plus/icons-vue'
 
     let userInfo = userInfoStore()
     let teacherInfo = teacherInfoStore()
     let isLoding = ref(true)
-    let tableData1 = ref([])
-    let tableData2 = ref([])
-    let tableData3 = ref([])
+    let tableData1 = ref([]) as any
+    let tableData2 = ref([]) as any
+    let tableData3 = ref([]) as any
+    let activeIndex = ref('1')
+    let rowData = ref([]) as any
 
     //异步请求，获取表格数据
     nextTick(async () => {
+        await teacherInfo.getAllStudent()
         await teacherInfo.getUnCheckedStuent()
         await teacherInfo.getStuent()
-        await teacherInfo.getAllStudent()
         isLoding.value = false
-        tableData1.value = toRaw(teacherInfo.unSelectedList)
-        tableData2.value = toRaw(teacherInfo.studentList)
+        tableData1.value = toRaw(teacherInfo.unSelectedList).map((item:any) => {
+            return item.name
+        })
+        tableData2.value = toRaw(teacherInfo.studentList).map((item:any) => {
+            return item.name
+        })
         tableData3.value = toRaw(teacherInfo.allStudentList)
     })
 
     //导出表格数据
-    let exportTable = ((tableName: string, exprotName: string) => {
-        //获取 table 表格数据
-        let et = XLSX.utils.table_to_book(document.querySelector(`#${tableName}`));
-        let etout = XLSX.write(et, {
-            bookType: 'xlsx',
-            bookSST: true,
-            type: 'array'
-        });
-        try {
-            FileSaver.saveAs(new Blob([etout], {
-                type: 'application/octet-stream'
-            }), `${exprotName}.xlsx`);
-        } catch (e) {
-            console.log(e, etout);
-        }
-        return etout;
+    let exportTable = (() => {
+        //表头
+        let tableData = [
+            ['#', '学号', '姓名', '导师']
+        ]
+        tableData3.value.forEach((item:any, index:any) => {
+            if(tableData3.value){
+                rowData.value = [
+                index + 1,
+                item.number,
+                item.name,
+                item.teacherName,
+            ]
+            }
+            tableData.push(rowData.value)
+        })
+        let workSheet = XLSX.utils.aoa_to_sheet(tableData);
+        let bookNew = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(bookNew, workSheet, '毕设学生表格')
+        let name = '毕设学生表格' + '.xlsx'
+        XLSX.writeFile(bookNew, name)
     })
 
 </script>
 
 <style scoped>
-    .btn {
-        background-color: rgb(182, 199, 163);
-        margin: 15px;
+    div {
+        max-width: 1000px;
+        margin: auto;
     }
 
-    .btn:hover {
-        background-color: rgb(225, 232, 217);
+    .span {
+        display: inline-block;
+        margin: 10px;
+    }
+
+    .el-col {
+        border-radius: 4px;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
     }
 </style>

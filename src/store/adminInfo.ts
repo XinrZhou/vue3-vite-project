@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ElMessage  } from 'element-plus'
+import moment from "moment";
 import { reqCheckAdmin, reqResetPwd, reqResetDate, reqAddTeachers, reqAddStudents } from "@/api";
 
 export const adminInfoStore = defineStore('adminInfo', {
@@ -17,7 +18,7 @@ export const adminInfoStore = defineStore('adminInfo', {
         async resetPwd(number: string) {
             try{
                 await reqResetPwd(number)
-                ElMessage.success(`重置成功！新密码为${number}`)
+                ElMessage.success(`重置成功!`)
             }catch(error:any){
                 ElMessage.error(error.message)
             }
@@ -27,7 +28,8 @@ export const adminInfoStore = defineStore('adminInfo', {
         async resetDate(time: string) {
             try{
                 await reqResetDate(time)
-                ElMessage.success(`更新成功！新时间为${time}`)
+                let newTime = moment(time).format("YYYY-MM-DD HH:mm:ss") 
+                ElMessage.success(`更新成功！新时间为${newTime}`)
             }catch(error:any){
                 ElMessage.error(error.message)
             }

@@ -1,20 +1,16 @@
 import { defineStore } from "pinia";
 import { reqGetLogin,reqGetTeacherList,reqChangePwd,reqGetInfo, reqCheckAdmin } from "@/api";
-import {setToken,getToken} from '@/utils/token'
-import { setRole,getRole} from "@/utils/role";
-import { setUid,getUid} from "@/utils/uid";
-import { setPassword,getPassword} from "@/utils/password";
 import { ElMessage } from "element-plus";
+import { clear } from "console";
 
 export const userInfoStore = defineStore('userInfo',{
     state:()=>{
         return {
-            uid:getUid()||'',
-            password:getPassword()||'',
-            token:getToken()||'',
+            token:localStorage.getItem('TOKEN')||'',
+            role:localStorage.getItem('ROLE')||'',
             startTime:localStorage.getItem('STARTTIME')||'',
             teacherName:localStorage.getItem('TEACHERNAME')||'',
-            name:localStorage.getItem('NAME')||''
+            name:localStorage.getItem('NAME')||'',
         }
     },
     actions:{
@@ -22,13 +18,10 @@ export const userInfoStore = defineStore('userInfo',{
           async goLogin(User:any){
             try{
                 let result:any = await reqGetLogin(User)
-                setUid(User.number)
-                setPassword(User.password)
-                setToken(result.headers['token'])
-                setRole(result.headers['role'])
-                this.uid = getUid()
-                this.password = getPassword()
-                this.token = getToken()
+                localStorage.setItem('TOKEN',result.headers.token)
+                localStorage.setItem('ROLE',result.headers.role)
+                this.token = localStorage.getItem('TOKEN')||''
+                this.role = localStorage.getItem('ROLE')||''
                 this.getInfo()
             }catch(error:any){
                 ElMessage.error(error.message)
@@ -60,5 +53,11 @@ export const userInfoStore = defineStore('userInfo',{
                 ElMessage.error(error.message)
             }
         },
+
+        //退出登录
+        goLogout(){
+            localStorage.clear()
+            location.reload()
+        }
     }
 })

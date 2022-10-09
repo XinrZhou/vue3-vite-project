@@ -1,79 +1,59 @@
-import { createRouter,createWebHistory} from 'vue-router'
-import { getToken } from '@/utils/token'
+import { createRouter,createWebHashHistory} from 'vue-router'
 import { ElMessage  } from 'element-plus'
 
 const router = createRouter({
-    history:createWebHistory(),
+    history:createWebHashHistory(),
     routes:[
-        {
-            name:'home',
-            path:'/home',
-            component:()=>import('@/views/Home.vue'),
-        },
-        {
-            name:'selectcenter',
-            path:'/selectcenter',
-            component:()=>import('@/views/SelectCenter.vue'),
-            children:[
-                {
-                    name:'admin',
-                    path:'admin',
-                    component:()=>import('@/views/Admin.vue'),
-                    meta:{
-                        isAuth:true
-                    }
-                },
-                {
-                    name:'student',
-                    path:'student',
-                    component:()=>import('@/views/Student.vue'),
-                    meta:{
-                        isAuth:true
-                    }
-                },
-                {
-                    name:'teacher',
-                    path:'teacher',
-                    component:()=>import('@/views/Teacher.vue'),
-                    meta:{
-                        isAuth:true
-                    }
-                }
-            ]
-        },
-        {
-            name:'usercenter',
-            path:'/usercenter',
-            component:()=>import('@/views/UserCenter.vue'),
-            meta:{
-                isAuth:true
-            }
-        },
         {
             name:'login',
             path:'/login',
             component:()=>import('@/views/Login.vue'),
         },
-        //重定向，在项目运行之后，定向到首页
+        {
+            name:'admin',
+            path:'/admin',
+            component:()=>import('@/views/Admin.vue'),
+            meta:{
+                role:'ppYMg'
+            }
+        },
+        {
+            name:'student',
+            path:'/student',
+            component:()=>import('@/views/Student.vue'),
+            meta:{
+                role:'Yo87M'
+            }
+        },
+        {
+            name:'teacher',
+            path:'/teacher',
+            component:()=>import('@/views/Teacher.vue'),
+            meta:{
+                role:'nU0vt'
+            }
+        },
+        //重定向，在项目运行之后
         {
             path:'/:pathMatch(.*)',
-            redirect:'/home'
+            redirect:'/login',
         }
     ]
 })
 
-//全局前置路由守卫
-router.beforeEach((to,from,next)=>{
-    if(to.meta.isAuth){
-        if(getToken()){
-            next()
-        }else{
-            ElMessage.error('您当前无权查看该页面,请先登录！')
-            router.push('/login')
-        }
-    }else{
-        next()
+router.beforeEach((to, from, next) => {
+    if (!to.meta.role) {
+      next()
+      return
     }
-})
+  
+    if (to.meta.role == localStorage.getItem('ROLE')) {
+      next()
+      return
+    }else{
+        localStorage.clear()
+        router.push('/login')
+    }
+  })
 
 export default router

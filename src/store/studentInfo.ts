@@ -1,15 +1,16 @@
 import { defineStore } from "pinia";
-import { ElMessage  } from 'element-plus'
+import { ElMessage, ItemProps  } from 'element-plus'
 import { reqGetTeacherList, reqSelectTutor } from "@/api";
+import { toRaw, ref, nextTick } from 'vue';
 
 export const studentInfoStore = defineStore('studentInfo', {
     state: () => {
         return {
             teacherList: [] as any,
             isChecked: false,
-            teacherName: '',
             isLoaded: false,
-            isStart:false
+            isStart:false,
+            teacherName:localStorage.getItem('TEACHERNAME')||''
         }
     },
     actions: {
@@ -19,7 +20,11 @@ export const studentInfoStore = defineStore('studentInfo', {
                 let result:any = await reqGetTeacherList()
                 this.isStart = true
                 this.isLoaded = true
+                let list = result.data.data.teachers
                 this.teacherList = result.data.data.teachers
+                this.teacherList.forEach((item:any)=> {
+                    Object.assign(item,{remaining:`${item.total-item.count}`})
+                });
             }catch(error:any){
                 ElMessage.error(error.message)
             }
@@ -29,9 +34,10 @@ export const studentInfoStore = defineStore('studentInfo', {
         async selectTutor(tid:number){
             try{
                 let result:any = await reqSelectTutor(tid)
-                this.teacherName = result.data.data.user.teacherName
+                localStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
+                this.teacherName = localStorage.getItem('TEACHERNAME')||''
                 this.isChecked = true
-                ElMessage.success('选择成功！')
+                ElMessage.success(`选择成功！您的导师为${this.teacherName}`)
             }catch(error:any){
                 ElMessage.error(error.message)
             }

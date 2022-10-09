@@ -1,29 +1,23 @@
 import axios from 'axios'
 import { ElMessage  } from 'element-plus'
 import {userInfoStore} from '@/store/userInfo'
-import { getRole } from '@/utils/role'
-import { getToken } from '@/utils/token'
-import { getUid } from '@/utils/uid'
  
 export  const request =(options:any)=> {
   return new Promise((resolve, reject) => {
 
     const infoStore = userInfoStore()
+
+    axios.defaults.baseURL = '/api'
     
     const service = axios.create({
-      baseURL: '/api',
       timeout: 5000 
     })
  
     // 请求拦截器
     service.interceptors.request.use(
       (config:any) => {
-        let token:string|null = getToken()
-        let role:string|null = getRole()
-        let uid:number|null = parseInt(getUid()) 
-        if (token) config.headers['token'] = token    
-        if (role)  config.headers['role'] = role     
-        if (uid)  config.headers['uid'] = uid    
+        let token:string|null = localStorage.getItem('TOKEN')
+        if (token) config.headers['token'] = token         
         return config
       },
       error => {
@@ -51,7 +45,6 @@ export  const request =(options:any)=> {
        return Promise.reject(error)
      }
    )
-
     // 请求处理
     service(options)
       .then((res) => {

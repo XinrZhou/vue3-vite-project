@@ -1,19 +1,14 @@
 <template>
-  <body class="is-preload">
-    <div id="wrapper">
-      <Header/>
-      <Nav/>
-    </div>
-  </body>
+  <router-view></router-view>
 </template>
 
-<script lang="ts" setup >
-  import Header from '@/components/Header.vue'
-  import Nav from '@/components/Nav.vue'
-
+<script lang="ts" setup>
 
 </script>
 
-<style>
-  @import url('@/assets/css/templatemo-style.css');
+<style >
+ @import url('@/assets/css/base.css');
+ #app{
+    height:100%;
+  }
 </style>
