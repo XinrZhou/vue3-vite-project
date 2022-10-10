@@ -25,7 +25,6 @@ export const userInfoStore = defineStore('userInfo',{
                 this.password = User.password
                 this.token = localStorage.getItem('TOKEN')||''
                 this.role = localStorage.getItem('ROLE')||''
-                this.getInfo()
             }catch(error:any){
                 ElMessage.error(error.message)
                 return Promise.reject(new Error(error.message))

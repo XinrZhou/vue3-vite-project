@@ -26,7 +26,6 @@ export  const request =(options:any)=> {
     // 响应拦截器
     service.interceptors.response.use(
       (response:any) => {
-        console.log(response)
         if(response.data.code ==200 || response.data==''){
           return response
         }else{

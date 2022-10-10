@@ -29,7 +29,7 @@
 <script lang="ts" setup>
   import { useRouter } from 'vue-router'
   import { userInfoStore } from '@/store/userInfo'
-  import {reactive, toRefs,ref} from "vue";
+  import { reactive, toRefs, ref } from "vue";
 
   const router = useRouter()
   const infoStore = userInfoStore()
@@ -41,7 +41,7 @@
     password: ''
   })
 
-  let login = async() => {
+  let login = async () => {
     try {
       await infoStore.goLogin(User)
       switch (infoStore.role) {

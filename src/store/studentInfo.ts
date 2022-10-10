@@ -22,7 +22,7 @@ export const studentInfoStore = defineStore('studentInfo', {
                 this.teacherList = result.data.data.teachers
                 this.teacherList.forEach((item:any)=> {
                     Object.assign(item,{remaining:`${item.total-item.count}`})
-                });
+                })
             }catch(error:any){
                 ElMessage.error(error.message)
             }

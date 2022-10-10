@@ -15,7 +15,7 @@
                                 </div>
                             </template>
                             <div class="text item">
-                                <DateTimePicker @DateTime="getDateTime" />
+                                <DateTimePicker @DateTime="getDateTime" :time="startTime" />
                                 <el-button type="success" :icon="Check" @click="resetDateTime" />
                             </div>
                         </el-card>
@@ -55,23 +55,11 @@
                                 </div>
                             </template>
                             <el-row>
-                                <el-col :span="12">
-                                    <el-upload ref="uploadRef" class="upload-demo" :auto-upload="false" accept=".xlsx"
-                                        :show-file-list="false" :on-change="change">
-                                        <template #trigger>
-                                            <el-button type="primary">选择文件</el-button>
-                                        </template>
-                                        <el-button slot="trigger" type="info" :icon="Delete" @click="deletData"
-                                            style="margin-left: 8px;" />
-                                        <el-button type="success" :icon="Check" @click="addTeachers" />
-                                        <template #tip>
-                                            <div class="el-upload__tip text-red">
-                                                xls、xlsx格式
-                                            </div>
-                                        </template>
-                                    </el-upload>
+                                <el-col :span="13">
+                                    <Upload @uploadData="getUploadData" @deleteData="deleteUploadData"
+                                        @confirmUpload="addUser"></Upload>
                                 </el-col>
-                                <el-col :span="12">
+                                <el-col :span="11">
                                     <span v-show="teachersArr.length!=0?true:false">{{newTeachersArr}}......</span>
                                 </el-col>
                             </el-row>
@@ -88,23 +76,11 @@
                                 </div>
                             </template>
                             <el-row>
-                                <el-col :span="12">
-                                    <el-upload ref="uploadRef" class="upload-demo" :auto-upload="false"
-                                        :show-file-list="false" accept=".xlsx" :on-change="change">
-                                        <template #trigger>
-                                            <el-button type="primary">选择文件</el-button>
-                                        </template>
-                                        <el-button slot="trigger" type="info" :icon="Delete" @click="deletData"
-                                            style="margin-left: 8px;" />
-                                        <el-button type="success" :icon="Check" @click="addStudents" />
-                                        <template #tip>
-                                            <div class="el-upload__tip text-red">
-                                                xls、xlsx格式
-                                            </div>
-                                        </template>
-                                    </el-upload>
+                                <el-col :span="13">
+                                    <Upload @uploadData="getUploadData" @deleteData="deleteUploadData"
+                                        @confirmUpload="addUser" />
                                 </el-col>
-                                <el-col :span="12">
+                                <el-col :span="11">
                                     <span v-show="studentsArr.length!=0?true:false">{{newStudentsArr}}......
                                     </span>
                                 </el-col>
@@ -116,7 +92,8 @@
             <el-footer>
                 <Footer />
             </el-footer>
-            <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose" @handleConfirm="resolveConfirm"/>
+            <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose"
+                @handleConfirm="resolveConfirm" />
         </el-container>
     </div>
 </template>
@@ -124,80 +101,56 @@
 <script lang="ts" setup>
     import moment from "moment";
     import { ElMessage, ElMessageBox } from 'element-plus'
-    import { ref, reactive, onMounted, toRaw,nextTick} from 'vue'
+    import { ref, reactive, onMounted, toRaw, nextTick } from 'vue'
     import Header from '@/components/Header.vue'
     import DateTimePicker from '@/components/DateTimePicker.vue'
     import { adminInfoStore } from '@/store/adminInfo'
     import { userInfoStore } from '@/store/userInfo'
     import { Clock, Edit, User, Check, Delete, Unlock } from '@element-plus/icons-vue'
-    import * as XLSX from 'xlsx'
     import Footer from '@/components/Footer.vue'
     import Dialog from '@/components/Dialog.vue'
+    import Upload from '@/components/Upload.vue'
 
     let adminInfo = adminInfoStore()
     let userInfo = userInfoStore()
     let userNumber = ref('')
     let dateTime = ref('')
     let uploadArr = ref([]) as any
-    let ws = ref([]) as any
     let teachersArr = ref([]) as any
     let studentsArr = ref([]) as any
     let newTeachersArr = ref([]) as any
     let newStudentsArr = ref([]) as any
     let isShow = ref(false)
+    let startTime = ref('')
+    let ws = ref([]) as any
 
     let dialogFormVisible = ref(false)
 
-    nextTick(async ()=>{
-        await userInfo.getInfo()
-        await adminInfo.checkAdimin()
-        if(userInfo.password!='' && userInfo.password == userInfo.uid){
+    adminInfo.checkAdimin()
+    userInfo.getInfo()
+
+    onMounted(() => {
+        if (userInfo.password != '' && userInfo.password == userInfo.uid) {
             dialogFormVisible.value = true
         }
         isShow.value = true
+        startTime.value = userInfo.startTime
     })
 
-    //处理xlsx表格数据
-    let change = (file, fileList) => {
-        let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-        let extension = testmsg === 'xls'
-        let extension2 = testmsg === 'xlsx'
-        if (!extension && !extension2) {
-            ElMessage.error('上传文件只能是 xls、xlsx格式')
-        } else {
-            const upload_file = fileList[0].raw;
-            const reader = new FileReader();
-            reader.readAsBinaryString(new Blob([upload_file], { type: "application/vnd.ms-excel" }));
-            reader.onload = ev => {
-                try {
-                    let f = ev.target
-                    if (f) {
-                        const file = f.result;
-                        const workbook = XLSX.read(file, { type: "binary" });
-                        const wsname = workbook.SheetNames[0];
-                        ws.value = XLSX.utils.sheet_to_json(workbook.Sheets[wsname], { header: 1, defval: '#' });
-                        ws.value.shift()
-                        ws.value = toRaw(ws.value)
-                        if (ws.value[0][3]) {
-                            for (let i = 0; i < ws.value.length; i++) {
-                                teachersArr.value.push({ "name": ws.value[i][2], "number": ws.value[i][1].toString(), "total": ws.value[i][3] })
-                            }
-                            newTeachersArr.value = teachersArr.value[0]
-                        } else {
-                            for (let i = 0; i < ws.value.length; i++) {
-                                studentsArr.value.push({ "name": ws.value[i][2], "number": ws.value[i][1].toString() })
-                            }
-                            newStudentsArr.value = studentsArr.value[0]
-                        }
-                    }
-                }
-                catch (e) {
-                    console.log(e);
-                    return false;
-                }
+    //获取上传数据
+    let getUploadData = (value: any) => {
+        ws.value = toRaw(value)
+        if (ws.value[0][3]) {
+            for (let i = 0; i < ws.value.length; i++) {
+                teachersArr.value.push({ "name": ws.value[i][2], "number": ws.value[i][1].toString(), "total": ws.value[i][3] })
             }
+            newTeachersArr.value = teachersArr.value[0]
+        } else {
+            for (let i = 0; i < ws.value.length; i++) {
+                studentsArr.value.push({ "name": ws.value[i][2], "number": ws.value[i][1].toString() })
+            }
+            newStudentsArr.value = studentsArr.value[0]
         }
-        return extension || extension2
     }
 
     //确认重置
@@ -218,7 +171,7 @@
 
     //添加导师
     let addTeachers = () => {
-        if (teachersArr.value.length != 0) {
+        if (toRaw(teachersArr.value).length != 0) {
             adminInfo.addTeachers(teachersArr.value)
             teachersArr.value = []
         } else {
@@ -228,7 +181,7 @@
 
     //添加学生
     let addStudents = () => {
-        if (studentsArr.value.length != 0) {
+        if (toRaw(studentsArr.value).length != 0) {
             adminInfo.addStudents(studentsArr.value)
             studentsArr.value = []
         } else {
@@ -236,33 +189,39 @@
         }
     }
 
-    //取消添加
-    let cancelAdd = (value: any) => {
-        if (value == 1) {
-            teachersArr.value = []
-        } else {
-            studentsArr.value = []
+    //上传
+    let addUser = () => {
+        console.log(newStudentsArr.value)
+        if (toRaw(newStudentsArr.value).length != 0) {
+            addStudents()
+            console.log('/////')
+        }
+        if (toRaw(newTeachersArr.value).length != 0) {
+            addTeachers()
+            console.log('hhhhhh')
         }
     }
 
     //删除上传文件数据
-    let deletData = () => {
+    let deleteUploadData = () => {
         teachersArr.value = []
         studentsArr.value = []
     }
 
-   let resolveClose = ()=>{
-    dialogFormVisible.value = false
-  }
-
-  let resolveConfirm = (value:any)=>{
-    if(value.pwd1!='' && value.pwd1 == value.pwd2){
-      userInfo.changePwd(value.pwd1)
-    }else{
-      ElMessage.error('The two passwords do not match!')
+    //对话框——取消
+    let resolveClose = () => {
+        dialogFormVisible.value = false
     }
-    dialogFormVisible.value = false
-  }
+
+    //对话框——确认
+    let resolveConfirm = (value: any) => {
+        if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
+            userInfo.changePwd(value.pwd1)
+        } else {
+            ElMessage.error('The two passwords do not match!')
+        }
+        dialogFormVisible.value = false
+    }
 </script>
 
 <style scoped>

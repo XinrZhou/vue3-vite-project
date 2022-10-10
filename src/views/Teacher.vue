@@ -7,10 +7,12 @@
             <el-main>
                 <el-card class="box-card">
                     <div class="demo-collapse">
-                        <el-collapse >
+                        <el-collapse>
                             <el-row>
                                 <el-col :span="1">
-                                    <el-icon><StarFilled /></el-icon>
+                                    <el-icon>
+                                        <StarFilled />
+                                    </el-icon>
                                 </el-col>
                                 <el-col :span="23">
                                     <el-collapse-item title="我的学生" name="3">
@@ -22,7 +24,9 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="1">
-                                    <el-icon><Search /></el-icon>
+                                    <el-icon>
+                                        <Search />
+                                    </el-icon>
                                 </el-col>
                                 <el-col :span="23">
                                     <el-collapse-item title="未选学生名单" name="1">
@@ -34,7 +38,9 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="1">
-                                    <el-icon><Link /></el-icon>
+                                    <el-icon>
+                                        <Link />
+                                    </el-icon>
                                 </el-col>
                                 <el-col :span="23">
                                     <el-collapse-item title="导出毕设学生表格" name="2" @click="exportTable()">
@@ -44,29 +50,45 @@
                         </el-collapse>
                     </div>
                 </el-card>
+                <el-row v-if="!teacherInfo.isStart">
+                    <el-col>
+                        <el-result icon="info" title="系统暂未开放" style="margin: auto;">
+                            <template #sub-title>
+                                <p>开始时间</p>
+                            </template>
+                            <template #extra>
+                                <span class="span">
+                                    {{moment(userInfo.startTime).format("YYYY-MM-DD HH:mm:ss") }}
+                                </span>
+                            </template>
+                        </el-result>
+                    </el-col>
+                </el-row>
             </el-main>
             <el-footer>
-                   <Footer/>
+                <Footer />
             </el-footer>
         </el-container>
-        <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose" @handleConfirm="resolveConfirm"/>
+        <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose"
+            @handleConfirm="resolveConfirm" />
     </div>
     <div>
     </div>
 </template>
 
 <script lang="ts" setup>
+    import moment from "moment";
     import Header from '@/components/Header.vue'
     import FileSaver from 'file-saver'
     import * as XLSX from 'xlsx';
     import { toRaw, ref, nextTick } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
-    import { Link,Search,StarFilled } from '@element-plus/icons-vue'
+    import { Link, Search, StarFilled } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
     import Footer from '@/components/Footer.vue'
-  
- 
+
+
     let dialogFormVisible = ref(false)
     let userInfo = userInfoStore()
     let teacherInfo = teacherInfoStore()
@@ -77,22 +99,23 @@
     let rowData = ref([]) as any
     let isShow = ref(false)
 
-    //异步请求，获取表格数据
+    userInfo.getInfo()
+    //获取表格数据
     nextTick(async () => {
-        if(userInfo.password!='' && userInfo.password == userInfo.uid){
-          dialogFormVisible.value = true
-        }
         await teacherInfo.getAllStudent()
         await teacherInfo.getUnCheckedStuent()
-        await teacherInfo.getStuent()
-        tableData1.value = toRaw(teacherInfo.unSelectedList).map((item:any) => {
+        await teacherInfo.getStudent()
+        tableData1.value = toRaw(teacherInfo.unSelectedList).map((item: any) => {
             return item.name
         })
-        tableData2.value = toRaw(teacherInfo.studentList).map((item:any) => {
+        tableData2.value = toRaw(teacherInfo.studentList).map((item: any) => {
             return item.name
         })
         tableData3.value = toRaw(teacherInfo.allStudentList)
         isShow.value = true
+        if (userInfo.password != '' && userInfo.password == userInfo.uid) {
+            dialogFormVisible.value = true
+        }
     })
 
     //导出表格数据
@@ -101,14 +124,14 @@
         let tableData = [
             ['#', '学号', '姓名', '导师']
         ]
-        tableData3.value.forEach((item:any, index:any) => {
-            if(tableData3.value){
+        tableData3.value.forEach((item: any, index: any) => {
+            if (tableData3.value) {
                 rowData.value = [
-                index + 1,
-                item.number,
-                item.name,
-                item.teacherName,
-            ]
+                    index + 1,
+                    item.number,
+                    item.name,
+                    item.teacherName,
+                ]
             }
             tableData.push(rowData.value)
         })
@@ -119,46 +142,47 @@
         XLSX.writeFile(bookNew, name)
     })
 
-  let resolveClose = ()=>{
-    dialogFormVisible.value = false
-  }
-
-  let resolveConfirm = (value:any)=>{
-    if(value.pwd1!='' && value.pwd1 == value.pwd2){
-      userInfo.changePwd(value.pwd1)
-    }else{
-      ElMessage.error('The two passwords do not match!')
+    //对话框——取消
+    let resolveClose = () => {
+        dialogFormVisible.value = false
     }
-    dialogFormVisible.value = false
-  }
+
+    //对话框——确认
+    let resolveConfirm = (value: any) => {
+        if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
+            userInfo.changePwd(value.pwd1)
+        } else {
+            ElMessage.error('The two passwords do not match!')
+        }
+        dialogFormVisible.value = false
+    }
 
 </script>
 
 <style scoped>
-   .common-layout {
+    .common-layout {
         max-width: 1000px;
         background-color: #F2F3F5;
         border: 1px solid #DCDFE6;
         margin: auto;
     }
 
-  .span {
-    display: inline-block;
-    margin: 10px;
-  }
-
-  .el-col {
-    border-radius: 4px;
-  }
-
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
-
-  .box-card {
-      background-color: #FFFFFF;
-      margin: 10px;
+    .span {
+        display: inline-block;
+        margin: 10px;
     }
 
+    .el-col {
+        border-radius: 4px;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+
+    .box-card {
+        background-color: #FFFFFF;
+        margin: 10px;
+    }
 </style>

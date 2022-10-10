@@ -13,13 +13,13 @@
   
   <script lang="ts" setup>
   import moment from "moment";
-  import { ref,watch } from 'vue'
+  import { ref,watch,onMounted,defineProps } from 'vue'
   import { userInfoStore } from '@/store/userInfo'
 
-  const infoStore = userInfoStore()
-
   let time = ref('')
-  time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss") 
+  const infoStore = userInfoStore()
+  const props = defineProps(['startTime'])
+
   const value2 = ref('')
   const shortcuts = [
     {
@@ -28,6 +28,11 @@
     },
   ]
   const emits = defineEmits(['DateTime'])
+
+  onMounted(() => {
+    time.value = moment(props.startTime).format("YYYY-MM-DD HH:mm:ss") 
+  })
+
   watch(value2,()=>{
     if(value2.value){
       time.value = moment(value2.value).format("YYYY-MM-DD HH:mm:ss") 

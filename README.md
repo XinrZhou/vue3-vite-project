@@ -1,5 +1,6 @@
 # Vue 3 + TypeScript + Vite + Pinia + Element-Plus
 
+
 ## 路由
 1. 重定向
 ```
@@ -23,6 +24,7 @@ const route = toRaw(useRoute())
 history:createWebHashHistory(),
 ```
 
+
 ## ajax请求
 1. 接口地址：http://122.9.33.79:8855/api/
 2. 解决跨域（开发环境）
@@ -45,6 +47,7 @@ server: {
  axios.defaults.baseURL = '/api'
  ```
 
+
  ## 所有角色
  ### 登录 /login  POST
  1. 参数
@@ -60,7 +63,9 @@ server: {
  ```
  if (token) config.headers['token'] = token 
  ```
+
  ## 获取用户信息  /info  GET
+
  ## 修改密码 /password/${pwd}  PUT
  判断用户密码是否为默认密码，若为默认密码，弹窗提示用户修改密码
 ```
@@ -68,9 +73,12 @@ if (User.password == User.number )
 
 ```
 
+
 ## 管理员角色
 ### 身份校验  /admin/checkadmin  GET
+
 ### 重置密码 /admin/password/{number}  PUT  number为用户名
+
 ### 重置开始时间  /admin/starttime/{time}  PUT
 1. 获取时间选择器中的数据，进行格式转换后传给服务器
 ```
@@ -93,10 +101,13 @@ const emits = defineEmits(['DateTime'])
     emits('DateTime',value2.value)
   })
 ```
+
 ### 添加导师  /admin/teachers  POST
+
 ### 添加学生  /admin/students  POST
 1. 自定义事件 
-2. 上传.xlsx文件并对数据进行处理
+2. 上传.xlsx文件，前端对数据处理后传给服务器
+
 
 ## 学生角色  
 ### 获取导师列表  /teachers  GET
@@ -105,17 +116,11 @@ const emits = defineEmits(['DateTime'])
 ```
 teacherList:[] as any
 ```
-3. 导师剩余名额计算后展示在页面
+3. 导师剩余名额需要经过计算
 4. pinia数据更新但页面不重新渲染
 * 异步操作加载顺序
-* 解决方案：nextTick
-```
-nextTick(async() => {
-    await getTeacherList()
-    isLoding.value = false
-    tableData.value = toRaw(studentInfo.teacherList)
-}) 
-```
+* 解决方案：nextTick()
+
 ### 选导师  /teachers/{tid}  PUT
 1. 获取表格当前行的数据：使用插槽
 ```
@@ -125,15 +130,19 @@ nextTick(async() => {
 </template>
 ```
 2. 判断当前导师的剩余名额是否为0，若为0，则禁用选择按钮
-3. 学生未选导师，进度条为2；若成功选择，进度条状态变为4
+3. 学生未选导师，进度条为2；选中但未确认，进度条为3；成功选择，进度条状态变为4
+
 
 ## 教师角色  
 ### 查看未选择学生  /teacher/unselected  GET
+
 ### 查看个人学生  /teacher/students  GET
+
 ### 全部学生导师  /teacher/allstudents  GET
 1. 导表格时，需要对数据进行处理才能正确生成xlsx表
 
 
+## 其他问题
 ### 部署：docker docker-compose
 1. nginx代理，解决跨域问题
 2. vite刷新后404，需要将路由改为hash模式(#)
@@ -167,7 +176,17 @@ import moment from "moment";
 ```
 {{moment(userInfo.startTime).format("YYYY-MM-DD HH:mm:ss") }}
 ```
-### 其他问题
-1. 页面完成渲染时数据未获取完毕，数据更新后页面不再重新渲染
+
+### 其他
+1. 页面完成渲染时数据未获取完毕
 * v-show，先设为false
 * 当所有请求数据回来之后，再将v-show变为true
+2. vue3中setup相当于生命周期函数，替代了beforeCreate 、created这两个钩子
+3. vue3.2父子组件通信——子组件
+```
+import { defineProps } from 'vue'
+const props = defineProps(['value'])
+```
+4. 管理员角色上传文件
+* 封装Upload组件，使用组件自定义事件
+* 处理后的数据有些是Proxy对象，需要toRaw()再进行后续操作
