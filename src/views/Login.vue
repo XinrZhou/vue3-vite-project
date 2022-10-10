@@ -29,18 +29,19 @@
 <script lang="ts" setup>
   import { useRouter } from 'vue-router'
   import { userInfoStore } from '@/store/userInfo'
-  import { reactive, onMounted } from 'vue'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  import {reactive, toRefs,ref} from "vue";
 
   const router = useRouter()
   const infoStore = userInfoStore()
+  let pwd1 = ref('')
+  let pwd2 = ref('')
 
   let User = reactive({
     number: '',
     password: ''
   })
 
-  let login = async () => {
+  let login = async() => {
     try {
       await infoStore.goLogin(User)
       switch (infoStore.role) {
@@ -54,24 +55,9 @@
           router.push('/teacher')
           break;
       }
-      if (User.password == User.number ) {
-        ElMessageBox.prompt('Please reset your password！', {
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel',
-        })
-          .then(({ value }) => {
-            infoStore.changePwd(value)
-          })
-          .catch(() => {
-            ElMessage({
-              type: 'info',
-              message: 'Reset fail',
-            })
-          })
-      }
     } catch (error: any) {
       User.number = '',
-      User.password = ''
+        User.password = ''
     }
   }
 </script>

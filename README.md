@@ -133,13 +133,14 @@ nextTick(async() => {
 ### 全部学生导师  /teacher/allstudents  GET
 1. 导表格时，需要对数据进行处理才能正确生成xlsx表
 
-## 其他问题
+
 ### 部署：docker docker-compose
 1. nginx代理，解决跨域问题
 2. vite刷新后404，需要将路由改为hash模式(#)
 ```
 history:createWebHashHistory()
 ```
+
 ### element-plus 
 1. 使用图标库时需要单独安装
 ```
@@ -148,6 +149,13 @@ history:createWebHashHistory()
 2. 按需引入
 ```
 import { Clock,Edit,User} from '@element-plus/icons-vue'
+```
+3. 输入框不居中 
+```
+<div class="mt-4" style="text-align: -webkit-center">
+    <el-input v-model="input3" placeholder="用户名" 
+    </el-input>
+</div>
 ```
 
 ### 处理后端返回时间 moment.js
@@ -159,3 +167,7 @@ import moment from "moment";
 ```
 {{moment(userInfo.startTime).format("YYYY-MM-DD HH:mm:ss") }}
 ```
+### 其他问题
+1. 页面完成渲染时数据未获取完毕，数据更新后页面不再重新渲染
+* v-show，先设为false
+* 当所有请求数据回来之后，再将v-show变为true

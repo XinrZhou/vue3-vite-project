@@ -1,6 +1,6 @@
 <template>
     <div class="block">
-        <span class="demonstration">With shortcuts</span>
+        <span class="demonstration">开始时间:{{time}}</span>
         <el-date-picker
           v-model="value2"
           type="datetime"
@@ -12,8 +12,14 @@
 </template>
   
   <script lang="ts" setup>
+  import moment from "moment";
   import { ref,watch } from 'vue'
-  
+  import { userInfoStore } from '@/store/userInfo'
+
+  const infoStore = userInfoStore()
+
+  let time = ref('')
+  time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss") 
   const value2 = ref('')
   const shortcuts = [
     {
@@ -23,6 +29,11 @@
   ]
   const emits = defineEmits(['DateTime'])
   watch(value2,()=>{
+    if(value2.value){
+      time.value = moment(value2.value).format("YYYY-MM-DD HH:mm:ss") 
+    }else{
+      time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss") 
+    }
     emits('DateTime',value2.value)
   })
 

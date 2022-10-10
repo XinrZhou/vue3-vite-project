@@ -1,5 +1,5 @@
 <template>
-    <div class="common-layout">
+    <div class="common-layout" v-show="isShow">
         <el-container>
             <el-header>
                 <Header />
@@ -46,13 +46,10 @@
                 </el-card>
             </el-main>
             <el-footer>
-                <el-row>
-                    <el-col :span="24">
-                        <div style="text-align: center;">Design:2020-软件工程2班 周馨睿</div>
-                    </el-col>
-                </el-row>
+                   <Footer/>
             </el-footer>
         </el-container>
+        <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose" @handleConfirm="resolveConfirm"/>
     </div>
     <div>
     </div>
@@ -66,22 +63,28 @@
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
     import { Link,Search,StarFilled } from '@element-plus/icons-vue'
-
+    import Dialog from '@/components/Dialog.vue'
+    import Footer from '@/components/Footer.vue'
+  
+ 
+    let dialogFormVisible = ref(false)
     let userInfo = userInfoStore()
     let teacherInfo = teacherInfoStore()
-    let isLoding = ref(true)
     let tableData1 = ref([]) as any
     let tableData2 = ref([]) as any
     let tableData3 = ref([]) as any
     let activeIndex = ref('1')
     let rowData = ref([]) as any
+    let isShow = ref(false)
 
     //异步请求，获取表格数据
     nextTick(async () => {
+        if(userInfo.password!='' && userInfo.password == userInfo.uid){
+          dialogFormVisible.value = true
+        }
         await teacherInfo.getAllStudent()
         await teacherInfo.getUnCheckedStuent()
         await teacherInfo.getStuent()
-        isLoding.value = false
         tableData1.value = toRaw(teacherInfo.unSelectedList).map((item:any) => {
             return item.name
         })
@@ -89,6 +92,7 @@
             return item.name
         })
         tableData3.value = toRaw(teacherInfo.allStudentList)
+        isShow.value = true
     })
 
     //导出表格数据
@@ -115,25 +119,46 @@
         XLSX.writeFile(bookNew, name)
     })
 
+  let resolveClose = ()=>{
+    dialogFormVisible.value = false
+  }
+
+  let resolveConfirm = (value:any)=>{
+    if(value.pwd1!='' && value.pwd1 == value.pwd2){
+      userInfo.changePwd(value.pwd1)
+    }else{
+      ElMessage.error('The two passwords do not match!')
+    }
+    dialogFormVisible.value = false
+  }
+
 </script>
 
 <style scoped>
-    div {
+   .common-layout {
         max-width: 1000px;
+        background-color: #F2F3F5;
+        border: 1px solid #DCDFE6;
         margin: auto;
     }
 
-    .span {
-        display: inline-block;
-        margin: 10px;
+  .span {
+    display: inline-block;
+    margin: 10px;
+  }
+
+  .el-col {
+    border-radius: 4px;
+  }
+
+  .grid-content {
+    border-radius: 4px;
+    min-height: 36px;
+  }
+
+  .box-card {
+      background-color: #FFFFFF;
+      margin: 10px;
     }
 
-    .el-col {
-        border-radius: 4px;
-    }
-
-    .grid-content {
-        border-radius: 4px;
-        min-height: 36px;
-    }
 </style>

@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { reqGetLogin,reqGetTeacherList,reqChangePwd,reqGetInfo, reqCheckAdmin } from "@/api";
 import { ElMessage } from "element-plus";
-import { clear } from "console";
 
 export const userInfoStore = defineStore('userInfo',{
     state:()=>{
@@ -11,6 +10,8 @@ export const userInfoStore = defineStore('userInfo',{
             startTime:localStorage.getItem('STARTTIME')||'',
             teacherName:localStorage.getItem('TEACHERNAME')||'',
             name:localStorage.getItem('NAME')||'',
+            uid:'',
+            password:''
         }
     },
     actions:{
@@ -20,6 +21,8 @@ export const userInfoStore = defineStore('userInfo',{
                 let result:any = await reqGetLogin(User)
                 localStorage.setItem('TOKEN',result.headers.token)
                 localStorage.setItem('ROLE',result.headers.role)
+                this.uid = User.number
+                this.password = User.password
                 this.token = localStorage.getItem('TOKEN')||''
                 this.role = localStorage.getItem('ROLE')||''
                 this.getInfo()

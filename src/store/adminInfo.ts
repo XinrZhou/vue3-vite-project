@@ -29,7 +29,7 @@ export const adminInfoStore = defineStore('adminInfo', {
             try{
                 await reqResetDate(time)
                 let newTime = moment(time).format("YYYY-MM-DD HH:mm:ss") 
-                ElMessage.success(`更新成功！新时间为${newTime}`)
+                ElMessage.success(`更新成功！新时间${newTime}`)
             }catch(error:any){
                 ElMessage.error(error.message)
             }

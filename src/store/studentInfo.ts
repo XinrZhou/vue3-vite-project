@@ -8,7 +8,6 @@ export const studentInfoStore = defineStore('studentInfo', {
         return {
             teacherList: [] as any,
             isChecked: false,
-            isLoaded: false,
             isStart:false,
             teacherName:localStorage.getItem('TEACHERNAME')||''
         }
@@ -19,7 +18,6 @@ export const studentInfoStore = defineStore('studentInfo', {
             try{
                 let result:any = await reqGetTeacherList()
                 this.isStart = true
-                this.isLoaded = true
                 let list = result.data.data.teachers
                 this.teacherList = result.data.data.teachers
                 this.teacherList.forEach((item:any)=> {

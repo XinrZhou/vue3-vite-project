@@ -1,25 +1,25 @@
 <template>
-  <div class="common-layout">
+  <div class="common-layout"  v-if="isShow">
     <el-container>
-      <el-header>
-        <Header />
+      <el-header >
+        <Header/>
       </el-header>
-      <el-main>
+      <el-main style="margin: 10px;background-color: #F2F3F5;">
         <el-row>
           <el-col :span="24">
             <el-card class="box-card">
               <el-steps :active="status" align-center>
-                <el-step title="Login" />
-                <el-step title="Choose" />
-                <el-step title="Wait" />
-                <el-step title="Confirm" />
+                <el-step title="Login" description="登录" :icon="HomeFilled"/>
+                <el-step title="Choose" description="选择导师" :icon="Pointer" />
+                <el-step title="Confirm" description="信息确认" :icon="Loading" />
+                <el-step title="Submit" description="提交" :icon="Select" />
               </el-steps>
             </el-card>
           </el-col>
         </el-row>
         <el-row v-if="!studentInfo.isStart">
-          <el-col :sm="12" :lg="6">
-            <el-result icon="info" title="系统暂未开放">
+          <el-col >
+            <el-result icon="info" title="系统暂未开放"  style="margin: auto;">
               <template #sub-title>
                 <p>开始时间</p>
               </template>
@@ -34,18 +34,21 @@
         <el-row>
           <el-col :span="24" v-if="studentInfo.isStart&&!isSelected">
             <el-card class="box-card">
-              <el-table :data="tableData" style="width: 100%">
-                <el-table-column type="index" label="#" width="90" />
-                <el-table-column prop="name" label="Name" width="240" />
-                <el-table-column label="Count" width="240">
+              <el-table :data="tableData" style="width: 100%"
+              :header-cell-style="{textAlign: 'center'}"
+              :cell-style="{ textAlign: 'center' }"
+              >
+                <el-table-column type="index" label="#"  />
+                <el-table-column prop="name" label="Name"  />
+                <el-table-column label="Count" >
                   <template v-slot="scope">
-                    <el-button type="primary" size="small">{{scope.row.total}}/{{scope.row.remaining}}</el-button>
+                    <el-button type="primary" size="small">{{scope.row.count}}/{{scope.row.total}}</el-button>
                   </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="Operations" width="120">
+                <el-table-column fixed="right" label="Operations">
                   <template v-slot="scope">
                     <el-button type="success" size="small" :disabled="scope.row.remaining=='0'?true:false"
-                      @click="confirmSelect(scope.row.id)">Confirm</el-button>
+                      @click="confirmSelect(scope.row.id)">Choose</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -54,45 +57,65 @@
         </el-row>
       </el-main>
       <el-footer>
-        <el-row>
-          <el-col :span="24">
-            <div style="text-align: center;">Design:2020-软件工程2班 周馨睿</div>
-          </el-col>
-        </el-row>
+        <Footer />
       </el-footer>
     </el-container>
+    <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="resolveClose" @handleConfirm="resolveConfirm"/>
   </div>
 </template>
 
 <script lang="ts" setup>
   import moment from "moment";
-  import { toRaw, ref, nextTick } from 'vue'
+  import { toRaw, ref,onMounted,nextTick,getCurrentInstance} from 'vue'
+  import { HomeFilled, Pointer,Loading,Select } from '@element-plus/icons-vue'
   import { userInfoStore } from '@/store/userInfo'
   import { studentInfoStore } from '@/store/studentInfo'
   import Header from '@/components/Header.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import Footer from '@/components/Footer.vue'
+  import Dialog from '@/components/Dialog.vue'
+  
+  let dialogFormVisible = ref(false)
 
   let userInfo = userInfoStore()
   let studentInfo = studentInfoStore()
-  let isLoding = ref(true)
   let tableData = ref([])
   let isDisabled = ref(false)
   let status = ref(2)
   let isSelected = ref(false)
+  let teacherName = ref('')
+  let isShow = ref(false)
+  let  { proxy } =getCurrentInstance()
 
-  //获取导师列表
-  nextTick(async () => {
+
+   //获取导师列表
+   nextTick(async () => {
     await userInfo.getInfo()
+    if(userInfo.password!='' && userInfo.password == userInfo.uid){
+      dialogFormVisible.value = true
+    }
     if(userInfo.teacherName != 'undefined'){
       isSelected.value = true
       status.value = 4
       ElMessage.success(`您已完成选择，您的导师为${userInfo.teacherName}`)
     }
     await studentInfo.getTeacherList()
-    isLoding.value = false
     tableData.value = toRaw(studentInfo.teacherList)
+    isShow.value = true
   })
+
+  let resolveClose = ()=>{
+    dialogFormVisible.value = false
+  }
+
+  let resolveConfirm = (value:any)=>{
+    if(value.pwd1!='' && value.pwd1 == value.pwd2){
+      userInfo.changePwd(value.pwd1)
+    }else{
+      ElMessage.error('The two passwords do not match!')
+    }
+    dialogFormVisible.value = false
+  }
 
 
   //确认选择
@@ -102,7 +125,7 @@
       '确定选择该老师为您的导师吗？',
       'Tips',
       {
-        confirmButtonText: 'Yes',
+        confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         type: 'warning',
       }
@@ -124,10 +147,12 @@
 </script>
 
 <style scoped >
-  div {
-    max-width: 1000px;
-    margin: auto;
-  }
+  .common-layout {
+        max-width: 1000px;
+        background-color: #F2F3F5;
+        border: 1px solid #DCDFE6;
+        margin: auto;
+    }
 
   .span {
     display: inline-block;
@@ -142,4 +167,10 @@
     border-radius: 4px;
     min-height: 36px;
   }
+
+  .box-card {
+      background-color: #FFFFFF;
+      margin: 10px;
+    }
+
 </style>
