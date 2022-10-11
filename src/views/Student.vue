@@ -84,7 +84,6 @@
   let isSelected = ref(false)
   let teacherName = ref('')
   let isShow = ref(false)
-  let { proxy } = getCurrentInstance()
 
 
   //获取导师列表

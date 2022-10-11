@@ -29,7 +29,7 @@
 <script lang="ts" setup>
   import { useRouter } from 'vue-router'
   import { userInfoStore } from '@/store/userInfo'
-  import { reactive, toRefs, ref } from "vue";
+  import { reactive, ref } from "vue";
 
   const router = useRouter()
   const infoStore = userInfoStore()

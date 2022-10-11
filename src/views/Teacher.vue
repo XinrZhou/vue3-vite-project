@@ -73,6 +73,7 @@
     import { Link, Search, StarFilled } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
     import Footer from '@/components/Footer.vue'
+    import { ElMessage, ElMessageBox } from 'element-plus'
 
 
     let dialogFormVisible = ref(false)
