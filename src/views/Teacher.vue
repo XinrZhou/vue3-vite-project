@@ -50,20 +50,6 @@
                         </el-collapse>
                     </div>
                 </el-card>
-                <el-row v-if="!teacherInfo.isStart">
-                    <el-col>
-                        <el-result icon="info" title="系统暂未开放" style="margin: auto;">
-                            <template #sub-title>
-                                <p>开始时间</p>
-                            </template>
-                            <template #extra>
-                                <span class="span">
-                                    {{moment(userInfo.startTime).format("YYYY-MM-DD HH:mm:ss") }}
-                                </span>
-                            </template>
-                        </el-result>
-                    </el-col>
-                </el-row>
             </el-main>
             <el-footer>
                 <Footer />
@@ -95,13 +81,17 @@
     let tableData1 = ref([]) as any
     let tableData2 = ref([]) as any
     let tableData3 = ref([]) as any
-    let activeIndex = ref('1')
+    // let activeIndex = ref('1')
     let rowData = ref([]) as any
     let isShow = ref(false)
 
-    userInfo.getInfo()
     //获取表格数据
     nextTick(async () => {
+        await userInfo.getInfo()
+        isShow.value = true
+        if (userInfo.password != '' && userInfo.password == userInfo.uid) {
+            dialogFormVisible.value = true
+        }
         await teacherInfo.getAllStudent()
         await teacherInfo.getUnCheckedStuent()
         await teacherInfo.getStudent()
@@ -112,10 +102,6 @@
             return item.name
         })
         tableData3.value = toRaw(teacherInfo.allStudentList)
-        isShow.value = true
-        if (userInfo.password != '' && userInfo.password == userInfo.uid) {
-            dialogFormVisible.value = true
-        }
     })
 
     //导出表格数据

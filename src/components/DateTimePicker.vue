@@ -1,25 +1,19 @@
 <template>
-    <div class="block">
-        <span class="demonstration">开始时间:{{time}}</span>
-        <el-date-picker
-          v-model="value2"
-          type="datetime"
-          placeholder="Select date and time"
-          :shortcuts="shortcuts"
-          value-format="YYYY-MM-DDTHH:mm:ss"
-        />
-    </div>
+  <div class="block">
+    <span class="demonstration">开始时间:{{time}}</span>
+    <el-date-picker v-model="value2" type="datetime" placeholder="Select date and time" :shortcuts="shortcuts"
+      value-format="YYYY-MM-DDTHH:mm:ss" />
+  </div>
 </template>
-  
-  <script lang="ts" setup>
+
+<script lang="ts" setup>
   import moment from "moment";
-  import { ref,watch,onMounted,defineProps } from 'vue'
+  import { ref, watch, nextTick} from 'vue'
   import { userInfoStore } from '@/store/userInfo'
 
   let time = ref('')
+  
   const infoStore = userInfoStore()
-  const props = defineProps(['startTime'])
-
   const value2 = ref('')
   const shortcuts = [
     {
@@ -29,36 +23,40 @@
   ]
   const emits = defineEmits(['DateTime'])
 
-  onMounted(() => {
-    time.value = moment(props.startTime).format("YYYY-MM-DD HH:mm:ss") 
+  time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss")
+
+  nextTick(async() => {
+    await infoStore.getInfo()
+    time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss")
   })
 
-  watch(value2,()=>{
-    if(value2.value){
-      time.value = moment(value2.value).format("YYYY-MM-DD HH:mm:ss") 
-    }else{
-      time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss") 
+  watch(value2, () => {
+    if (value2.value) {
+      time.value = moment(value2.value).format("YYYY-MM-DD HH:mm:ss")
+    } else {
+      time.value = moment(infoStore.startTime).format("YYYY-MM-DD HH:mm:ss")
     }
-    emits('DateTime',value2.value)
+    emits('DateTime', value2.value)
   })
 
-  </script>
+</script>
 
-  <style scoped>
+<style scoped>
   .block {
     padding: 30px 0;
     text-align: center;
     border-right: solid 1px var(--el-border-color);
     flex: 1;
   }
+
   .block:last-child {
     border-right: none;
   }
+
   .demonstration {
     display: block;
     color: var(--el-text-color-secondary);
     font-size: 14px;
     margin-bottom: 20px;
   }
-  </style>
-  
+</style>

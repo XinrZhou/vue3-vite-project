@@ -8,7 +8,6 @@ export const teacherInfoStore = defineStore('teacherInfo', {
             unSelectedList: [] as any,
             studentList: [] as any,
             allStudentList: [] as any,
-            isStart:false
         }
     },
     actions: {
@@ -17,7 +16,6 @@ export const teacherInfoStore = defineStore('teacherInfo', {
             try{
                 let result:any = await reqGetUnSelectedStudent()
                 this.unSelectedList = result.data.data.students
-                this.isStart = true
             }catch(error:any){
                 ElMessage.error(error.message)
             }
