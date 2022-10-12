@@ -4,87 +4,112 @@
             <el-header>
                 <Header />
             </el-header>
-            <el-main>
-                <!-- 重置开始时间 -->
+            <el-main height="100%">
                 <el-row>
                     <el-col :span="24">
                         <el-card class="box-card">
-                            <template #header>
-                                <div class="card-header">
-                                    <span class="span">重置开始时间</span>
-                                </div>
-                            </template>
                             <div class="text item">
-                                <DateTimePicker @DateTime="getDateTime" :time="startTime" />
-                                <el-button type="success" :icon="Check" @click="resetDateTime" />
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <!-- 重置密码 -->
-                <el-row>
-                    <el-col>
-                        <el-card class="box-card">
-                            <template #header>
-                                <div class="card-header">
-                                    <span class="span">重置密码（默认为用户学工号）</span>
-                                </div>
-                            </template>
-                            <el-row>
-                                <el-col>
-                                    <div class="mt-4" style="text-align: -webkit-center">
-                                        <el-input v-model="userNumber" placeholder="账号" style="max-width: 400px">
-                                            <template #append>
-                                                <el-button type="success" :icon="Check"
-                                                    style="background-color: #bad8ac;" @click="resetPwd" />
+                                <el-tabs tab-position="top" style="height: 500px" class="demo-tabs">
+                                    <el-tab-pane style=" margin-top: 15%;" :icon="Clock">
+                                        <template #label>
+                                            <span class="custom-tabs-label">
+                                              <el-icon><Clock /></el-icon>
+                                              <span>重置开始时间</span>
+                                            </span>
                                             </template>
-                                        </el-input>
-                                    </div>
-                                </el-col>
-                            </el-row>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <!-- 添加导师 -->
-                <el-row>
-                    <el-col>
-                        <el-card class="box-card">
-                            <template #header>
-                                <div class="card-header">
-                                    <span class="span">添加导师</span>
-                                </div>
-                            </template>
-                            <el-row>
-                                <el-col :span="13">
-                                    <Upload @uploadData="getUploadData" @deleteData="deleteUploadData"
-                                        @confirmUpload="addUser"></Upload>
-                                </el-col>
-                                <el-col :span="11">
-                                    <span v-show="teachersArr.length!=0?true:false">{{newTeachersArr}}......</span>
-                                </el-col>
-                            </el-row>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <!-- 添加学生 -->
-                <el-row>
-                    <el-col>
-                        <el-card class="box-card">
-                            <template #header>
-                                <div class="card-header">
-                                    <span class="span">添加学生</span>
-                                </div>
-                            </template>
-                            <el-row>
-                                <el-col :span="13">
-                                    <Upload @uploadData="getUploadData" @deleteData="deleteUploadData"
-                                        @confirmUpload="addUser" />
-                                </el-col>
-                                <el-col :span="11">
-                                    <span v-show="studentsArr.length!=0?true:false">{{newStudentsArr}}......
-                                    </span>
-                                </el-col>
-                            </el-row>
+                                        <div class="text item ">
+                                            <DateTimePicker @DateTime="getDateTime" :time="startTime" />
+                                            <div style="text-align: center;">
+                                                <el-button type="success" :icon="Check" @click="resetDateTime" />
+                                            </div>
+                                        </div>
+                                    </el-tab-pane>
+                                    <el-tab-pane style=" margin-top: 15%;">
+                                        <template #label>
+                                            <span class="custom-tabs-label">
+                                              <el-icon><Setting /></el-icon>
+                                              <span>重置密码</span>
+                                            </span>
+                                            </template>
+                                        <el-row>
+                                            <el-col>
+                                                <div>
+                                                    <span class="span">重置密码（默认为用户学工号）</span>
+                                                    <el-row>
+                                                        <el-col>
+                                                            <div class="mt-4" style="text-align: -webkit-center">
+                                                                <el-input v-model="userNumber" placeholder="账号"
+                                                                    style="max-width: 400px">
+                                                                    <template #append>
+                                                                        <el-button type="success" :icon="Check"
+                                                                            style="background-color: #bad8ac;"
+                                                                            @click="resetPwd" />
+                                                                    </template>
+                                                                </el-input>
+                                                            </div>
+                                                        </el-col>
+                                                    </el-row>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </el-tab-pane>
+                                    <el-tab-pane style=" margin-top: 15%;">
+                                        <template #label>
+                                            <span class="custom-tabs-label">
+                                              <el-icon><Avatar /></el-icon>
+                                              <span>添加老师</span>
+                                            </span>
+                                            </template>
+                                        <el-row >
+                                            <el-col class="addUser">
+                                                <div>
+                                                    <span class="span">添加老师</span>
+                                                    <el-row>
+                                                        <div style="margin: -webkit-center;">
+                                                            <el-col >
+                                                                <Upload @uploadData="getUploadData"
+                                                                    @deleteData="deleteUploadData"
+                                                                    @confirmUpload="addUser" :isUpload="isUpload">
+                                                                </Upload><br>
+                                                                <span
+                                                                    v-show="teachersArr.length!=0?true:false">{{newTeachersArr}}......</span>
+                                                            </el-col>          
+                                                        </div>
+                                                    </el-row>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </el-tab-pane>
+                                    <el-tab-pane style=" margin-top: 15%;">
+                                        <template #label>
+                                            <span class="custom-tabs-label">
+                                              <el-icon><UserFilled /></el-icon>
+                                              <span>添加学生</span>
+                                            </span>
+                                            </template>
+                                        <el-row>
+                                            <el-col class="addUser">
+                                                <div>
+                                                    <span class="span">添加学生</span>
+                                                    <el-row>
+                                                        <div style="margin: -webkit-center;">
+                                                            <el-col >
+                                                                <Upload @uploadData="getUploadData"
+                                                                    @deleteData="deleteUploadData"
+                                                                    @confirmUpload="addUser" :isUpload="isUpload">
+                                                                </Upload><br>
+                                                                <span
+                                                                v-show="studentsArr.length!=0?true:false">{{newStudentsArr}}......
+                                                                </span>
+                                                            </el-col>
+                                                        </div>
+                                                    </el-row>
+                                                </div>
+                                            </el-col>
+                                        </el-row>
+                                    </el-tab-pane>
+                                </el-tabs>
+                            </div>
                         </el-card>
                     </el-col>
                 </el-row>
@@ -105,7 +130,7 @@
     import DateTimePicker from '@/components/DateTimePicker.vue'
     import { adminInfoStore } from '@/store/adminInfo'
     import { userInfoStore } from '@/store/userInfo'
-    import { Clock, Edit, User, Check, Delete, Unlock } from '@element-plus/icons-vue'
+    import { Clock, Edit,  Check, Delete, Unlock,Setting,Avatar,UserFilled  } from '@element-plus/icons-vue'
     import Header from '@/components/Header.vue'
     import Footer from '@/components/Footer.vue'
     import Dialog from '@/components/Dialog.vue'
@@ -123,6 +148,7 @@
     let isShow = ref(false)
     let startTime = ref('')
     let ws = ref([]) as any
+    let isUpload = ref(false)
 
     let dialogFormVisible = ref(false)
 
@@ -191,21 +217,22 @@
 
     //上传
     let addUser = () => {
-        console.log(newStudentsArr.value)
         if (toRaw(newStudentsArr.value).length != 0) {
             addStudents()
-            console.log('/////')
         }
         if (toRaw(newTeachersArr.value).length != 0) {
             addTeachers()
-            console.log('hhhhhh')
         }
+        deleteUploadData()
     }
 
     //删除上传文件数据
     let deleteUploadData = () => {
         teachersArr.value = []
         studentsArr.value = []
+        newStudentsArr.value = []
+        newTeachersArr.value = []
+        isUpload.value = !isUpload.value
     }
 
     //对话框——取消
@@ -231,6 +258,7 @@
         border: 1px solid #DCDFE6;
         margin: auto;
         border-radius: 3px;
+        height: 100%;
     }
 
     .span {
@@ -240,10 +268,18 @@
         font-size: x-large;
         font-family: STKaiti;
         color: #303133;
+        padding: 5px;
+        margin-bottom: 10px;
     }
 
     .el-col {
         border-radius: 4px;
+    }
+
+    .addUser {
+        display: flex;
+        justify-content: center;                              
+        align-items: center;
     }
 
     .grid-content {
@@ -263,5 +299,18 @@
     .card-header {
         display: block;
         margin: 0 auto;
+    }
+
+    el-main {
+        height: 100%;
+    }
+
+    .demo-progress .el-progress--line {
+        margin-bottom: 15px;
+        width: 350px;
+    }
+
+    .demo-progress .el-progress--circle {
+        margin-right: 15px;
     }
 </style>

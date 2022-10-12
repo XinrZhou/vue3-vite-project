@@ -4,10 +4,10 @@
       <el-header>
         <Header />
       </el-header>
-      <el-main style="margin: 10px;background-color: #F2F3F5;">
+      <el-main style="background-color: #F2F3F5;" height="100%">
         <el-row>
           <el-col :span="24">
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="always">
               <el-steps :active="status" align-center>
                 <el-step title="Login" description="登录" :icon="HomeFilled" />
                 <el-step title="Choose" description="选择导师" :icon="Pointer" />
@@ -17,9 +17,10 @@
             </el-card>
           </el-col>
         </el-row>
+        <!-- 未开始信息展示 -->
         <el-row v-if="!studentInfo.isStart">
           <el-col>
-            <el-result icon="info" title="系统暂未开放" style="margin: auto;">
+            <el-result icon="info" title="系统暂未开放" style="margin: 10px;background-color:#FFFFFF;">
               <template #sub-title>
                 <p>开始时间</p>
               </template>
@@ -31,9 +32,22 @@
             </el-result>
           </el-col>
         </el-row>
+        <!-- 已完成信息展示 -->
+        <el-row v-if="studentInfo.isStart&&isSelected">
+          <el-col>
+            <el-result icon="success" title="您已完成选择" style="margin: 10px;background-color:#FFFFFF;">
+              <template #extra>
+                <span class="span">
+                  导师：{{teacherName}}
+                </span>
+              </template>
+            </el-result>
+          </el-col>
+        </el-row>
+        <!-- 选择列表 -->
         <el-row>
           <el-col :span="24" v-if="studentInfo.isStart&&!isSelected">
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="always">
               <el-table :data="tableData" style="width: 100%" :header-cell-style="{textAlign: 'center'}"
                 :cell-style="{ textAlign: 'center' }">
                 <el-table-column type="index" label="#" />
@@ -45,8 +59,9 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="Operations">
                   <template v-slot="scope">
-                    <el-button type="success" size="small" :disabled="scope.row.remaining=='0'?true:false"
-                      @click="confirmSelect(scope.row.id)">Choose</el-button>
+                    <el-button :type="scope.row.remaining=='0'?'warning':'success'" size="small"
+                      :disabled="scope.row.remaining=='0'?true:false" @click="confirmSelect(scope.row.id,scope.row.name)">Choose
+                    </el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -99,6 +114,7 @@
       isSelected.value = true
       status.value = 4
       ElMessage.success(`您已完成选择，您的导师为${userInfo.teacherName}`)
+      teacherName.value = userInfo.teacherName
     }
   })
 
@@ -119,7 +135,7 @@
 
 
   //确认选择
-  let confirmSelect = ((id: number) => {
+  let confirmSelect = ((id: number,name:string) => {
     status.value = 3
     ElMessageBox.confirm(
       'Confirm your choice？',
@@ -134,6 +150,7 @@
         await studentInfo.selectTutor(id)
         isSelected.value = true
         status.value = 4
+        teacherName.value = name
       })
       .catch(() => {
         ElMessage({
@@ -152,6 +169,8 @@
     background-color: #F2F3F5;
     border: 1px solid #DCDFE6;
     margin: auto;
+    border-radius: 3px;
+    height: 100%;
   }
 
   .span {

@@ -4,51 +4,48 @@
             <el-header>
                 <Header />
             </el-header>
-            <el-main>
-                <el-card class="box-card">
-                    <div class="demo-collapse">
-                        <el-collapse>
+            <el-main style="background-color: #F2F3F5;" height="100%">
+                <el-card shadow="always" class="box-card">
+                    <el-tabs style="height: max-content" class="demo-tabs">
+                        <el-tab-pane label="选择情况">
                             <el-row>
-                                <el-col :span="1">
-                                    <el-icon>
-                                        <StarFilled />
-                                    </el-icon>
+                                <el-col :span="10">
+                                    <div style="text-align: center;margin-top:20px;">
+                                        <el-progress type="dashboard" 
+                                        :percentage="percent" 
+                                        :width="150"
+                                        :status="percent==100?'success':''"
+                                        >
+                                            <template #default="{ percentage }">
+                                                <span class="percentage-label">完成率</span>
+                                                <br><br>
+                                                <span class="percentage-value">{{ percent }}%</span>
+                                            </template>
+                                        </el-progress> <br>
+                                        <el-button type="primary" @click="exportTable">
+                                            导出毕设学生表格<el-icon class="el-icon--right">
+                                                <Share />
+                                            </el-icon>
+                                        </el-button>
+                                    </div>
                                 </el-col>
-                                <el-col :span="23">
-                                    <el-collapse-item title="我的学生" name="3">
-                                        <div>
-                                            {{tableData2.length==0?'':tableData2}}
-                                        </div>
-                                    </el-collapse-item>
+                                <el-col :span="14">
+                                    <el-tabs style="height: 200px" class="demo-tabs">
+                                        <el-tab-pane label="我的学生">
+                                            <div style="margin: 10px;">
+                                                {{tableData2.length==0?'':tableData2}}
+                                            </div>
+                                        </el-tab-pane>
+                                        <el-tab-pane label="未选学生">
+                                            <div style="margin: 10px;">
+                                                {{tableData1.length==0?'':tableData1}}
+                                            </div>
+                                        </el-tab-pane>
+                                    </el-tabs>
                                 </el-col>
                             </el-row>
-                            <el-row>
-                                <el-col :span="1">
-                                    <el-icon>
-                                        <Search />
-                                    </el-icon>
-                                </el-col>
-                                <el-col :span="23">
-                                    <el-collapse-item title="未选学生名单" name="1">
-                                        <div>
-                                            {{tableData1.length==0?'':tableData1}}
-                                        </div>
-                                    </el-collapse-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="1">
-                                    <el-icon>
-                                        <Link />
-                                    </el-icon>
-                                </el-col>
-                                <el-col :span="23">
-                                    <el-collapse-item title="导出毕设学生表格" name="2" @click="exportTable()">
-                                    </el-collapse-item>
-                                </el-col>
-                            </el-row>
-                        </el-collapse>
-                    </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-card>
             </el-main>
             <el-footer>
@@ -70,10 +67,10 @@
     import { toRaw, ref, nextTick } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
-    import { Link, Search, StarFilled } from '@element-plus/icons-vue'
+    import { ElMessage, ElMessageBox } from 'element-plus'
+    import { Link, Search, StarFilled, Pointer, Share } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
     import Footer from '@/components/Footer.vue'
-    import { ElMessage, ElMessageBox } from 'element-plus'
 
 
     let dialogFormVisible = ref(false)
@@ -82,9 +79,15 @@
     let tableData1 = ref([]) as any
     let tableData2 = ref([]) as any
     let tableData3 = ref([]) as any
-    // let activeIndex = ref('1')
+    let newTableData3 = ref([]) as any
     let rowData = ref([]) as any
     let isShow = ref(false)
+    let percent = ref(0)
+    let unselected = ref(false)
+
+    let showUnselected = () => {
+        unselected.value = true
+    }
 
     //获取表格数据
     nextTick(async () => {
@@ -102,7 +105,12 @@
         tableData2.value = toRaw(teacherInfo.studentList).map((item: any) => {
             return item.name
         })
+        newTableData3.value = toRaw(teacherInfo.allStudentList).map((item: any) => {
+            return item.name
+        })
         tableData3.value = toRaw(teacherInfo.allStudentList)
+        let length = tableData3.value.length - tableData1.value.length
+        percent.value = Number((Number(length) / Number(tableData3.value.length)).toFixed(3)) * 100
     })
 
     //导出表格数据
@@ -152,6 +160,7 @@
         background-color: #F2F3F5;
         border: 1px solid #DCDFE6;
         margin: auto;
+        height: 100%;
     }
 
     .span {

@@ -47,11 +47,11 @@ router.beforeEach((to, from, next) => {
       return
     }
   
-    if (to.meta.role == localStorage.getItem('ROLE')) {
+    if (to.meta.role == sessionStorage.getItem('ROLE')) {
       next()
       return
     }else{
-        localStorage.clear()
+        sessionStorage.clear()
         router.push('/login')
     }
   })

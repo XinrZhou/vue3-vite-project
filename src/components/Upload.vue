@@ -6,7 +6,7 @@
         <el-button slot="trigger" type="info" :icon="Delete" @click="deleteData" style="margin-left: 8px;" />
         <el-button type="success" :icon="Check" @click="addUser" />
         <template #tip>
-            <div class="el-upload__tip text-red">
+            <div class="el-upload__tip text-red" style="text-align: center;">
                 xls、xlsx格式
             </div>
         </template>
@@ -14,13 +14,23 @@
 </template>
 
 <script setup lang='ts'>
-    import { ref, defineEmits,toRaw } from 'vue'
+    import { ref, defineEmits, toRaw, toRefs, watch, defineProps } from 'vue'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { Check, Delete } from '@element-plus/icons-vue'
     import * as XLSX from 'xlsx'
 
-    let emits = defineEmits(['uploadData','deleteData','confirmUpload'])
+    let emits = defineEmits(['uploadData', 'deleteData', 'confirmUpload'])
     let ws = ref([]) as any
+    const uploadRef = ref()
+    const props = defineProps({
+        isUpload:Boolean
+    })
+
+    watch(props,()=>{
+        uploadRef.value.clearFiles()
+    },{
+        deep:true
+    })
 
     //处理xlsx表格数据
     let change = (file: any, fileList: any) => {
@@ -45,7 +55,7 @@
                         ws.value = toRaw(ws.value)
                         emits('uploadData', ws.value)
                     }
-                }catch (e) {
+                } catch (e) {
                     console.log(e);
                     return false;
                 }
@@ -55,12 +65,12 @@
     }
 
     //取消上传
-    let deleteData = ()=>{
+    let deleteData = () => {
         emits('deleteData')
     }
 
     //上传
-    let addUser = ()=>{
+    let addUser = () => {
         emits('confirmUpload', ws.value)
     }
 

@@ -4,7 +4,7 @@
     <div id='stars2'></div>
     <div id='stars3'></div>
     <div class="login-box">
-      <h2>东北林业大学毕设选导师系统</h2>
+      <h2>选个导师带毕设</h2>
       <form>
         <div class="user-box">
           <input autocomplete="new-password" type="text" v-model="User.number" required key="username-v3" />

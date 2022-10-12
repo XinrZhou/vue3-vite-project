@@ -13,7 +13,7 @@ export  const request =(options:any)=> {
     // 请求拦截器
     service.interceptors.request.use(
       (config:any) => {
-        let token:string|null = localStorage.getItem('TOKEN')
+        let token:string|null = sessionStorage.getItem('TOKEN')
         if (token) config.headers['token'] = token         
         return config
       },

@@ -9,7 +9,7 @@ export const studentInfoStore = defineStore('studentInfo', {
             teacherList: [] as any,
             isChecked: false,
             isStart:false,
-            teacherName:localStorage.getItem('TEACHERNAME')||''
+            teacherName:sessionStorage.getItem('TEACHERNAME')||''
         }
     },
     actions: {
@@ -32,8 +32,8 @@ export const studentInfoStore = defineStore('studentInfo', {
         async selectTutor(tid:number){
             try{
                 let result:any = await reqSelectTutor(tid)
-                localStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
-                this.teacherName = localStorage.getItem('TEACHERNAME')||''
+                sessionStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
+                this.teacherName = sessionStorage.getItem('TEACHERNAME')||''
                 this.isChecked = true
                 ElMessage.success(`选择成功！您的导师为${this.teacherName}`)
             }catch(error:any){

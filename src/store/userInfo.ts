@@ -5,11 +5,11 @@ import { ElMessage } from "element-plus";
 export const userInfoStore = defineStore('userInfo',{
     state:()=>{
         return {
-            token:localStorage.getItem('TOKEN')||'',
-            role:localStorage.getItem('ROLE')||'',
-            startTime:localStorage.getItem('STARTTIME')||'',
-            teacherName:localStorage.getItem('TEACHERNAME')||'',
-            name:localStorage.getItem('NAME')||'',
+            token:sessionStorage.getItem('TOKEN')||'',
+            role:sessionStorage.getItem('ROLE')||'',
+            startTime:sessionStorage.getItem('STARTTIME')||'',
+            teacherName:sessionStorage.getItem('TEACHERNAME')||'',
+            name:sessionStorage.getItem('NAME')||'',
             uid:'',
             password:''
         }
@@ -19,12 +19,12 @@ export const userInfoStore = defineStore('userInfo',{
           async goLogin(User:any){
             try{
                 let result:any = await reqGetLogin(User)
-                localStorage.setItem('TOKEN',result.headers.token)
-                localStorage.setItem('ROLE',result.headers.role)
+                sessionStorage.setItem('TOKEN',result.headers.token)
+                sessionStorage.setItem('ROLE',result.headers.role)
                 this.uid = User.number
                 this.password = User.password
-                this.token = localStorage.getItem('TOKEN')||''
-                this.role = localStorage.getItem('ROLE')||''
+                this.token = sessionStorage.getItem('TOKEN')||''
+                this.role = sessionStorage.getItem('ROLE')||''
             }catch(error:any){
                 ElMessage.error(error.message)
                 return Promise.reject(new Error(error.message))
@@ -45,12 +45,12 @@ export const userInfoStore = defineStore('userInfo',{
         async getInfo(){
             try{
                 let result:any = await reqGetInfo()
-                localStorage.setItem('NAME',result.data.data.user.name)
-                localStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
-                localStorage.setItem('STARTTIME',result.data.data.starttime)
-                this.startTime = localStorage.getItem('STARTTIME')||''
-                this.name=localStorage.getItem('NAME')||''
-                this.teacherName = localStorage.getItem('TEACHERNAME')||''
+                sessionStorage.setItem('NAME',result.data.data.user.name)
+                sessionStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
+                sessionStorage.setItem('STARTTIME',result.data.data.starttime)
+                this.startTime = sessionStorage.getItem('STARTTIME')||''
+                this.name=sessionStorage.getItem('NAME')||''
+                this.teacherName = sessionStorage.getItem('TEACHERNAME')||''
             }catch(error:any){
                 ElMessage.error(error.message)
             }
@@ -58,7 +58,7 @@ export const userInfoStore = defineStore('userInfo',{
 
         //退出登录
         goLogout(){
-            localStorage.clear()
+            sessionStorage.clear()
             location.reload()
         }
     }

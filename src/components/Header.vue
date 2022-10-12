@@ -1,39 +1,30 @@
 <template>
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false">
-        <div>
-            <el-avatar shape="square" :size="66" @click="dialogVisible = true">
-                <el-icon>
-                    <Avatar />
-                </el-icon>{{userInfo.name}}
-            </el-avatar>
-        </div>
-        <div class="flex-grow" />
-        <el-menu-item index="2" v-if="userInfo.role=='ppYMg'?true:false">系统中心</el-menu-item>
-        <el-menu-item index="2" v-if="userInfo.role=='Yo87M'?true:false">选择中心</el-menu-item>
-        <el-menu-item index="2" v-if="userInfo.role=='nU0vt'?true:false">查询中心</el-menu-item>
-        <el-dialog v-model="dialogVisible" width="30%">
-            <el-icon>
-                <Setting />
-            </el-icon><span>Settings</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button type="primary" :icon="Edit" @click="dialogFormVisible=true" class="btn"/>
-                    <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="cancelChange" @handleConfirm="resolveConfirm"/>
-                    <el-button type="primary" :icon="Delete" @click="userInfo.goLogout" class="btn"/>
-                </span>
-            </template>
-        </el-dialog>
-    </el-menu>
+    <el-page-header title="logout" @back="userInfo.goLogout">
+        <template #content>
+            <div class="flex items-center">
+                <el-avatar :size="32" class="mr-3"
+                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                <el-tag>{{userInfo.name}}</el-tag>
+            </div>
+        </template>
+        <template #extra>
+            <div class="flex items-center">
+                <el-button type="primary" class="ml-2" @click="dialogFormVisible=true" :icon="EditPen">Edit</el-button>
+            </div>
+        </template>
+        <Dialog v-model="dialogFormVisible" v-if="dialogFormVisible" @handleClose="cancelChange"
+            @handleConfirm="resolveConfirm" />
+    </el-page-header>
 </template>
 
 <script setup lang='ts'>
-    import { ElMessage} from 'element-plus'
-    import { Check, Upload, Delete, Edit } from '@element-plus/icons-vue'
-    import { ref,reactive } from 'vue'
+    import { ElMessage } from 'element-plus'
+    import { Check, Upload, Delete, Edit, ArrowLeft, Avatar } from '@element-plus/icons-vue'
+    import { ref, reactive } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
-    import { Setting, Avatar } from '@element-plus/icons-vue'
+    import { Setting,EditPen } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
-    
+
 
     let dialogVisible = ref(false)
     let activeIndex = ref('2')
@@ -44,30 +35,23 @@
     const dialogTableVisible = ref(false)
     const dialogFormVisible = ref(false)
 
-    let cancelChange = ()=>{
+    let cancelChange = () => {
         dialogFormVisible.value = false
         dialogVisible.value = false
     }
 
-  let resolveConfirm = (value:any)=>{
-    if(value.pwd1!='' && value.pwd1 == value.pwd2){
-      userInfo.changePwd(value.pwd1)
-    }else{
-      ElMessage.error('The two passwords do not match!')
+    let resolveConfirm = (value: any) => {
+        if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
+            userInfo.changePwd(value.pwd1)
+        } else {
+            ElMessage.error('The two passwords do not match!')
+        }
+        cancelChange()
     }
-    cancelChange()
-  }
 
 
 </script>
 
 <style scoped>
-    .flex-grow {
-        flex-grow: 1;
-    }
 
-    .btn {
-        padding: 10px;
-        margin: 10px;
-    }
 </style>
