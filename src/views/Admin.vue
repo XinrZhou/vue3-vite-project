@@ -245,7 +245,15 @@
         if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
             userInfo.changePwd(value.pwd1)
         } else {
-            ElMessage.error('The two passwords do not match!')
+            ElMessageBox.alert('两次密码不一致，修改失败！', 'Tips', {
+                confirmButtonText: 'OK',
+                callback: (action: Action) => {
+                    ElMessage({
+                        type: 'info',
+                        message: '修改失败',
+                    })
+                },
+            })
         }
         dialogFormVisible.value = false
     }

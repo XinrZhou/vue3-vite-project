@@ -11,8 +11,8 @@
               <el-steps :active="status" align-center>
                 <el-step title="Login" description="登录" :icon="HomeFilled" />
                 <el-step title="Choose" description="选择导师" :icon="Pointer" />
-                <el-step title="Confirm" description="信息确认" :icon="Loading" />
-                <el-step title="Submit" description="提交" :icon="Select" />
+                <el-step title="Confirm" description="最终确认" :icon="Loading" />
+                <el-step title="Done" description="完成" :icon="Select" />
               </el-steps>
             </el-card>
           </el-col>
@@ -39,6 +39,9 @@
               <template #extra>
                 <span class="span">
                   导师：{{teacherName}}
+                </span><br>
+                <span class="span font">
+                  请尽快联系导师确定论文题目!
                 </span>
               </template>
             </el-result>
@@ -54,13 +57,15 @@
                 <el-table-column prop="name" label="Name" />
                 <el-table-column label="Count">
                   <template v-slot="scope">
-                    <el-button type="primary" size="small">{{scope.row.count}}/{{scope.row.total}}</el-button>
+                    <el-button type="primary" size="small" style="width:50px;">{{scope.row.count}}/{{scope.row.total}}
+                    </el-button>
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="Operations">
                   <template v-slot="scope">
                     <el-button :type="scope.row.remaining=='0'?'warning':'success'" size="small"
-                      :disabled="scope.row.remaining=='0'?true:false" @click="confirmSelect(scope.row.id,scope.row.name)">Choose
+                      :disabled="scope.row.remaining=='0'?true:false"
+                      @click="confirmSelect(scope.row.id,scope.row.name)">Choose
                     </el-button>
                   </template>
                 </el-table-column>
@@ -128,29 +133,50 @@
     if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
       userInfo.changePwd(value.pwd1)
     } else {
-      ElMessage.error('The two passwords do not match!')
+      ElMessageBox.alert('两次密码不一致，修改失败！', 'Tips', {
+                confirmButtonText: 'OK',
+                callback: (action: Action) => {
+                    ElMessage({
+                        type: 'info',
+                        message: '修改失败',
+                    })
+                },
+            })
     }
     dialogFormVisible.value = false
   }
 
 
   //确认选择
-  let confirmSelect = ((id: number,name:string) => {
+  let confirmSelect = ((id: number, name: string) => {
     status.value = 3
     ElMessageBox.confirm(
-      'Confirm your choice？',
+      `确定选择${name}为您的导师吗？ 一经选择，不可退改！`,
       'Tips',
       {
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
         type: 'warning',
+        center: true,
       }
     )
       .then(async () => {
-        await studentInfo.selectTutor(id)
-        isSelected.value = true
-        status.value = 4
-        teacherName.value = name
+        try {
+          await studentInfo.selectTutor(id)
+          isSelected.value = true
+          status.value = 4
+          teacherName.value = name
+        } catch (error: any) {
+          ElMessageBox.alert( error.message, 'Warning', {
+            confirmButtonText: 'OK',
+            callback: (action: Action) => {
+              ElMessage({
+                type: 'info',
+                message: error.message,
+              })
+            },
+          })
+        }
       })
       .catch(() => {
         ElMessage({
@@ -190,5 +216,10 @@
   .box-card {
     background-color: #FFFFFF;
     margin: 10px;
+  }
+
+  .font {
+    color: #F56C6C;
+    font-weight: bold;
   }
 </style>

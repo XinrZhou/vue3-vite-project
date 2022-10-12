@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="dialogFormVisible" title="Reset Password" width="30%">
+  <el-dialog :model-value="dialogFormVisible" title="Reset Password（建议修改默认密码）" width="35%">
     <el-form >
       <el-form-item >
         <el-input type="password" v-model="pwd.pwd1" autocomplete="off" placeholder="password"/>

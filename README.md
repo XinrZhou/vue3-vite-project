@@ -20,6 +20,7 @@ const route = toRaw(useRoute())
 4. 全局前置路由守卫
 * 路由元信息基于角色判断用户身份，进行路由跳转
 * 若非法访问（地址栏非法输入），则跳转至登录页
+* hash模式，解决生产环境刷新404问题
 ```
 history:createWebHashHistory(),
 ```
@@ -46,6 +47,7 @@ server: {
 ```
  axios.defaults.baseURL = '/api'
  ```
+ 3. 生产环境：nginx解决跨域
 
 
  ## 所有角色
@@ -58,15 +60,15 @@ server: {
 }
  ```
  2. 返回的headers中有token和role('Yo87M':学生，'nU0vt':教师，'ppYMg':管理员)
- 3. 持久化存储token、role
+ 3. 持久化存储token、role（sessionStorage）
  4. 请求拦截器添加token
  ```
  if (token) config.headers['token'] = token 
  ```
 
- ## 获取用户信息  /info  GET
+ ### 获取用户信息  /info  GET
 
- ## 修改密码 /password/${pwd}  PUT
+ ### 修改密码 /password/${pwd}  PUT
  判断用户密码是否为默认密码，若为默认密码，弹窗提示用户修改密码
 ```
 if (User.password == User.number )
@@ -131,15 +133,26 @@ teacherList:[] as any
 ```
 2. 判断当前导师的剩余名额是否为0，若为0，则禁用选择按钮
 3. 学生未选导师，进度条为2；选中但未确认，进度条为3；成功选择，进度条状态变为4
+4. 控制台修改提交按钮禁用状态，页面渲染结果与理想不符合，如何解决？
+* 拦截器配置正确（前提）
+* 将调用api的语句放在try-catch中
 
 
 ## 教师角色  
 ### 查看未选择学生  /teacher/unselected  GET
+1. 服务器返回数据为数组，需要处理后才能展示在页面上
+2. 去除数组中的引号和中括号
+```
+let str1 = JSON.stringify(tableData1.value)
+let name1 = str1.replace(/\[|]/g, '')
+data1.value = name1.replace(/\"/g, "")
+```
 
 ### 查看个人学生  /teacher/students  GET
 
 ### 全部学生导师  /teacher/allstudents  GET
-1. 导表格时，需要对数据进行处理才能正确生成xlsx表
+1. 导表格时，需要对数据进行处理
+2. 进度条组件，选导师完成率需要经过计算
 
 
 ## 其他问题
@@ -190,3 +203,4 @@ const props = defineProps(['value'])
 4. 管理员角色上传文件
 * 封装Upload组件，使用组件自定义事件
 * 处理后的数据有些是Proxy对象，需要toRaw()再进行后续操作
+5. UI设计应简约

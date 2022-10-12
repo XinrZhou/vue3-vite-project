@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ElMessage, ItemProps  } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { reqGetTeacherList, reqSelectTutor } from "@/api";
 import { toRaw, ref, nextTick } from 'vue';
 
@@ -35,9 +35,17 @@ export const studentInfoStore = defineStore('studentInfo', {
                 sessionStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
                 this.teacherName = sessionStorage.getItem('TEACHERNAME')||''
                 this.isChecked = true
-                ElMessage.success(`选择成功！您的导师为${this.teacherName}`)
+                ElMessageBox.alert(`选择成功,您的导师为${this.teacherName}!`, 'Success', {
+                    confirmButtonText: 'OK',
+                    callback: (action: Action) => {
+                        ElMessage({
+                            type: 'success',
+                            message: `您的导师 ${this.teacherName}`,
+                        })
+                    },
+                })
             }catch(error:any){
-                ElMessage.error(error.message)
+                return Promise.reject(new Error(error.message))
             }
         }
     }

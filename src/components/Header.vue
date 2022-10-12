@@ -1,9 +1,8 @@
 <template>
     <el-page-header title="logout" @back="userInfo.goLogout">
         <template #content>
-            <div class="flex items-center">
-                <el-avatar :size="32" class="mr-3"
-                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+            <div class="flex items-center" style="display: flex;justify-content: center;align-items: center;">
+                <el-avatar :size="32" class="mr-3" :icon="Avatar" />
                 <el-tag>{{userInfo.name}}</el-tag>
             </div>
         </template>
@@ -18,11 +17,11 @@
 </template>
 
 <script setup lang='ts'>
-    import { ElMessage } from 'element-plus'
+    import { ElMessage,ElMessageBox  } from 'element-plus'
     import { Check, Upload, Delete, Edit, ArrowLeft, Avatar } from '@element-plus/icons-vue'
     import { ref, reactive } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
-    import { Setting,EditPen } from '@element-plus/icons-vue'
+    import { Setting, EditPen } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
 
 
@@ -44,7 +43,15 @@
         if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
             userInfo.changePwd(value.pwd1)
         } else {
-            ElMessage.error('The two passwords do not match!')
+            ElMessageBox.alert('两次密码不一致，修改失败！', 'Tips', {
+                confirmButtonText: 'OK',
+                callback: (action: Action) => {
+                    ElMessage({
+                        type: 'info',
+                        message: '修改失败',
+                    })
+                },
+            })
         }
         cancelChange()
     }

@@ -11,15 +11,13 @@
                             <el-row>
                                 <el-col :span="10">
                                     <div style="text-align: center;margin-top:20px;">
-                                        <el-progress type="dashboard" 
-                                        :percentage="percent" 
-                                        :width="150"
-                                        :status="percent==100?'success':''"
-                                        >
-                                            <template #default="{ percentage }">
+                                        <el-progress type="dashboard" :percentage="percent" :width="150"
+                                            :status="percent==100?'success':''">
+                                            <template #default="{length}">
                                                 <span class="percentage-label">完成率</span>
                                                 <br><br>
-                                                <span class="percentage-value">{{ percent }}%</span>
+                                                <span
+                                                    class="percentage-value">{{tableData3.length-tableData1.length}}/{{(tableData3.length)}}</span>
                                             </template>
                                         </el-progress> <br>
                                         <el-button type="primary" @click="exportTable">
@@ -31,14 +29,26 @@
                                 </el-col>
                                 <el-col :span="14">
                                     <el-tabs style="height: 200px" class="demo-tabs">
-                                        <el-tab-pane label="我的学生">
-                                            <div style="margin: 10px;">
-                                                {{tableData2.length==0?'':tableData2}}
+                                        <el-tab-pane>
+                                            <template #label>
+                                                <span class="custom-tabs-label">
+                                                    <el-icon><StarFilled/></el-icon>
+                                                  <span>我的学生</span>
+                                                </span>
+                                                </template>
+                                            <div class="table-span">
+                                                {{tableData2.length==0?'':data2}}
                                             </div>
                                         </el-tab-pane>
-                                        <el-tab-pane label="未选学生">
-                                            <div style="margin: 10px;">
-                                                {{tableData1.length==0?'':tableData1}}
+                                        <el-tab-pane>
+                                            <template #label>
+                                                <span class="custom-tabs-label">
+                                                  <el-icon><InfoFilled /></el-icon>
+                                                  <span>未选学生</span>
+                                                </span>
+                                                </template>
+                                            <div class="table-span">
+                                                {{tableData1.length==0?'':data1}}
                                             </div>
                                         </el-tab-pane>
                                     </el-tabs>
@@ -68,10 +78,9 @@
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
     import { ElMessage, ElMessageBox } from 'element-plus'
-    import { Link, Search, StarFilled, Pointer, Share } from '@element-plus/icons-vue'
+    import { Link, StarFilled,Share,InfoFilled } from '@element-plus/icons-vue'
     import Dialog from '@/components/Dialog.vue'
     import Footer from '@/components/Footer.vue'
-
 
     let dialogFormVisible = ref(false)
     let userInfo = userInfoStore()
@@ -84,6 +93,8 @@
     let isShow = ref(false)
     let percent = ref(0)
     let unselected = ref(false)
+    let data1 = ref('')
+    let data2 = ref('')
 
     let showUnselected = () => {
         unselected.value = true
@@ -105,6 +116,12 @@
         tableData2.value = toRaw(teacherInfo.studentList).map((item: any) => {
             return item.name
         })
+        let str1 = JSON.stringify(tableData1.value)
+        let name1 = str1.replace(/\[|]/g, '')
+        data1.value = name1.replace(/\"/g, "")
+        let str2 = JSON.stringify(tableData2.value)
+        let name2 = str2.replace(/\[|]/g, '')
+        data2.value = name2.replace(/\"/g, "")
         newTableData3.value = toRaw(teacherInfo.allStudentList).map((item: any) => {
             return item.name
         })
@@ -147,7 +164,15 @@
         if (value.pwd1 != '' && value.pwd1 == value.pwd2) {
             userInfo.changePwd(value.pwd1)
         } else {
-            ElMessage.error('The two passwords do not match!')
+            ElMessageBox.alert('两次密码不一致，修改失败！', 'Tips', {
+                confirmButtonText: 'OK',
+                callback: (action: Action) => {
+                    ElMessage({
+                        type: 'info',
+                        message: '修改失败',
+                    })
+                },
+            })
         }
         dialogFormVisible.value = false
     }
@@ -180,5 +205,12 @@
     .box-card {
         background-color: #FFFFFF;
         margin: 10px;
+    }
+
+    .table-span {
+        margin: 10;
+        font-size: medium;
+        font-family: KaiTi;
+        color: #303133;
     }
 </style>

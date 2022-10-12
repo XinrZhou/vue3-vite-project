@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { reqGetLogin,reqGetTeacherList,reqChangePwd,reqGetInfo, reqCheckAdmin } from "@/api";
-import { ElMessage } from "element-plus";
+import { ElMessage,ElMessageBox } from "element-plus";
 
 export const userInfoStore = defineStore('userInfo',{
     state:()=>{
@@ -35,7 +35,15 @@ export const userInfoStore = defineStore('userInfo',{
         async changePwd(pwd:string){
             try{
                 let result:any = await reqChangePwd(pwd)
-                ElMessage.success(`您的新密码为${pwd}`)
+                ElMessageBox.alert(`您的新密码为${pwd}`, 'Success', {
+                    confirmButtonText: 'OK',
+                    callback: (action: Action) => {
+                        ElMessage({
+                            type: 'success',
+                            message: `新密码${pwd}`,
+                        })
+                    },
+                })
             }catch(error:any){
                 ElMessage.error(error.message)
             }
