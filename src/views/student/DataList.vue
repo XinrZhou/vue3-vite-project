@@ -46,7 +46,7 @@
     let confirmSelect = ((user: User) => {
         status.value = 3
         ElMessageBox.confirm(
-            `确定选择<b><span style="color:red">${user.name}老师</span></b>为您的毕业指导教师？<br>一经选择，不可退改！`,
+            `确定选择<b><span style="color:red">${user.name}老师</span></b>为您的毕设指导教师？<br>一经选择，不可退改！`,
             'Tips',
             {
                 confirmButtonText: 'Confirm',
@@ -74,9 +74,11 @@
                         })
                     }
                 } catch (error: any) {
+                    studentInfo.getTeacherList()
                     status.value = 2
-                    ElMessageBox.alert(error.message, 'Tips', {
+                    ElMessageBox.alert(`<span style="color:red"><b>${user.name}</b></span>老师数量已满，请重新选择！`, 'Tips', {
                         confirmButtonText: 'OK',
+                        dangerouslyUseHTMLString: true,
                     })
                 }
             })

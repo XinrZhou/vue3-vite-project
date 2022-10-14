@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import * as consty from '@/types/Const'
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -13,7 +14,7 @@ const router = createRouter({
             path: '/',
             component: () => import('@/views/Main.vue'),
             meta: {
-                role: 'Yo87M'
+                role: consty.STUDENT 
             },
             children: [
                 {
@@ -21,7 +22,7 @@ const router = createRouter({
                     path: 'admin',
                     component: () => import('@/views/admin/Admin.vue'),
                     meta: {
-                        role: 'ppYMg'
+                        role: consty.ADMIN 
                     }
                 },
                 {
@@ -29,7 +30,7 @@ const router = createRouter({
                     path: 'student',
                     component: () => import('@/views/student/Student.vue'),
                     meta: {
-                        role: 'Yo87M'
+                        role: consty.STUDENT 
                     }
                 },
                 {
@@ -37,7 +38,7 @@ const router = createRouter({
                     path: 'teacher',
                     component: () => import('@/views/teacher/Teacher.vue'),
                     meta: {
-                        role: 'nU0vt'
+                        role: consty.TEACHER 
                     }
                 },
             ]

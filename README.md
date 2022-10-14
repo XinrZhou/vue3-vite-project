@@ -1,5 +1,9 @@
 # Vue 3 + TypeScript + Vite + Pinia + Element-Plus
 
+## 创建项目
+```
+npm create vite@latest my-vue-app --template vue-ts
+```
 
 ## 路由
 1. 重定向
@@ -24,6 +28,8 @@ const route = toRaw(useRoute())
 ```
 history:createWebHashHistory(),
 ```
+5. vue-router4.x控制台报错："api.now is not a function"
+* 解决：开发者工具升级到新版
 
 
 ## ajax请求
@@ -70,16 +76,14 @@ server: {
 
  ### 修改密码 /password/${pwd}  PUT
  判断用户密码是否为默认密码，若为默认密码，弹窗提示用户修改密码
-```
-if (User.password == User.number )
-
-```
 
 
 ## 管理员角色
 ### 身份校验  /admin/checkadmin  GET
 
 ### 重置密码 /admin/password/{number}  PUT  number为用户名
+1. 用户需要输入两次密码，前端判断两次密码是否相同
+2. 相同：发请求；不同，弹窗提示两次密码不匹配
 
 ### 重置开始时间  /admin/starttime/{time}  PUT
 1. 获取时间选择器中的数据，进行格式转换后传给服务器
@@ -136,17 +140,13 @@ teacherList:[] as any
 4. 控制台修改提交按钮禁用状态，页面渲染结果与理想不符合，如何解决？
 * 拦截器配置正确（前提）
 * 将调用api的语句放在try-catch中
+* 重新拉取导师列表，获取最新数据
 
 
 ## 教师角色  
 ### 查看未选择学生  /teacher/unselected  GET
 1. 服务器返回数据为数组，需要处理后才能展示在页面上
-2. 去除数组中的引号和中括号
-```
-let str1 = JSON.stringify(tableData1.value)
-let name1 = str1.replace(/\[|]/g, '')
-data1.value = name1.replace(/\"/g, "")
-```
+2. 展示学生名单，for循环
 
 ### 查看个人学生  /teacher/students  GET
 
@@ -190,10 +190,8 @@ import moment from "moment";
 {{moment(userInfo.startTime).format("YYYY-MM-DD HH:mm:ss") }}
 ```
 
-### 其他
-1. 页面完成渲染时数据未获取完毕
-* v-show，先设为false
-* 当所有请求数据回来之后，再将v-show变为true
+### 其他问题
+1. 如何处理页面渲染和数据请求之间的关系
 2. vue3中setup相当于生命周期函数，替代了beforeCreate 、created这两个钩子
 3. vue3.2父子组件通信——子组件
 ```
@@ -204,3 +202,4 @@ const props = defineProps(['value'])
 * 封装Upload组件，使用组件自定义事件
 * 处理后的数据有些是Proxy对象，需要toRaw()再进行后续操作
 5. UI设计应简约
+6. 使用接口、常量等，避免硬编码

@@ -18,10 +18,13 @@
 </template>
  
 <script setup lang="ts">
-  import { reactive, ref,defineEmits,toRaw } from "vue"
+  import { userInfoStore } from '@/store/userInfo'
+  import { reactive, ref,defineEmits,toRaw,computed } from "vue"
   import { ElMessage} from 'element-plus'
+
+  let userInfo = userInfoStore()
   
-  let dialogFormVisible = ref(false)
+  let dialogFormVisible = computed(()=>{userInfo.showResetPassword})
   let isDisabled = ref(true)
 
   let emits = defineEmits(['handleClose','handleConfirm'])

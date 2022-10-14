@@ -23,7 +23,7 @@
                                         class="percentage-value">{{tableData3.length-tableData1.length}}/{{(tableData3.length)}}</span>
                                 </template>
                             </el-progress> <br>
-                            <el-button type="primary" @click="exportTable">
+                            <el-button type="primary" @click="exportTable" v-show="activeName == 'second'">
                                 导出毕设学生表格<el-icon class="el-icon--right">
                                     <Share />
                                 </el-icon>
