@@ -7,11 +7,11 @@
       <h2>选个导师带毕设</h2>
       <form>
         <div class="user-box">
-          <input autocomplete="new-password" type="text" v-model="User.number" required key="username-v3" />
+          <input autocomplete="new-password" type="text" v-model="user.number" required key="username-v3" />
           <label>账号</label>
         </div>
         <div class="user-box">
-          <input autocomplete="new-password" type="password" v-model="User.password" required key="password-v3" />
+          <input autocomplete="new-password" type="password" v-model="user.password" required key="password-v3" />
           <label>密码</label>
         </div>
         <a style="left:240px;" @click="login">
@@ -27,38 +27,26 @@
 </template>
 
 <script lang="ts" setup>
-  import { useRouter } from 'vue-router'
+  import { User } from '@/types/type'
   import { userInfoStore } from '@/store/userInfo'
-  import { reactive, ref } from "vue";
+  import { ref } from "vue";
 
-  const router = useRouter()
-  const infoStore = userInfoStore()
-  let pwd1 = ref('')
-  let pwd2 = ref('')
+  let userInfo = userInfoStore()
 
-  let User = reactive({
-    number: '',
-    password: ''
-  })
+  let user = ref <User> ({})
 
-  let login = async () => {
-    try {
-      await infoStore.goLogin(User)
-      switch (infoStore.role) {
-        case 'ppYMg':
-          router.push('/admin')
-          break;
-        case 'Yo87M':
-          router.push('/student')
-          break;
-        case 'nU0vt':
-          router.push('/teacher')
-          break;
-      }
-    } catch (error: any) {
-      User.number = '',
-        User.password = ''
+  let login = () => {
+    let number = user.value.number
+    let password = user.value.password
+    if (number == password) {
+      userInfo.showResetPassword = true
     }
+    userInfo.goLogin({
+      number: number,
+      password: password,
+    })
+    user.value.number = ''
+    user.value.password = ''
   }
 </script>
 

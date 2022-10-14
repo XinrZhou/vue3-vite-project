@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import moment from "moment";
 import { reqCheckAdmin, reqResetPwd, reqResetDate, reqAddTeachers, reqAddStudents } from "@/api";
+import { userInfoStore } from '@/store/userInfo'
+
+let userInfo = userInfoStore()
 
 export const adminInfoStore = defineStore('adminInfo', {
     actions: {
@@ -22,7 +25,7 @@ export const adminInfoStore = defineStore('adminInfo', {
             } catch (error: any) {
                 ElMessageBox.alert(error.message, 'Fail', {
                     confirmButtonText: 'OK',
-                    callback: (action: Action) => {
+                    callback: (action: any) => {
                         ElMessage({
                             type: 'warning',
                             message: error.message,
@@ -36,10 +39,11 @@ export const adminInfoStore = defineStore('adminInfo', {
         async resetDate(time: string) {
             try {
                 await reqResetDate(time)
+                userInfo.startTime = time
                 let newTime = moment(time).format("YYYY-MM-DD HH:mm:ss")
                 ElMessageBox.alert(`更新成功！新时间 ${newTime}`, 'Success', {
                     confirmButtonText: 'OK',
-                    callback: (action: Action) => {
+                    callback: (action: any) => {
                         ElMessage({
                             type: 'success',
                             message: `新时间${newTime}`,
@@ -49,7 +53,7 @@ export const adminInfoStore = defineStore('adminInfo', {
             } catch (error: any) {
                 ElMessageBox.alert(error.message, 'Fail', {
                     confirmButtonText: 'OK',
-                    callback: (action: Action) => {
+                    callback: (action: any) => {
                         ElMessage({
                             type: 'warning',
                             message: error.message,
@@ -67,7 +71,7 @@ export const adminInfoStore = defineStore('adminInfo', {
             } catch (error: any) {
                 ElMessageBox.alert(error.message, 'Fail', {
                     confirmButtonText: 'OK',
-                    callback: (action: Action) => {
+                    callback: (action: any) => {
                         ElMessage({
                             type: 'warning',
                             message: error.message,
@@ -85,7 +89,7 @@ export const adminInfoStore = defineStore('adminInfo', {
             } catch (error: any) {
                 ElMessageBox.alert(error.message, 'Fail', {
                     confirmButtonText: 'OK',
-                    callback: (action: Action) => {
+                    callback: (action: any) => {
                         ElMessage({
                             type: 'warning',
                             message: error.message,

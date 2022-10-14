@@ -1,15 +1,15 @@
-import { defineStore } from "pinia";
+import { defineStore } from "pinia"
+import { User } from '@/types/type'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { reqGetTeacherList, reqSelectTutor } from "@/api";
-import { toRaw, ref, nextTick } from 'vue';
+import { reqGetTeacherList, reqSelectTutor } from "@/api"
+import { userInfoStore } from '@/store/userInfo'
+
+let userInfo = userInfoStore()
 
 export const studentInfoStore = defineStore('studentInfo', {
     state: () => {
         return {
-            teacherList: [] as any,
-            isChecked: false,
-            isStart:false,
-            teacherName:sessionStorage.getItem('TEACHERNAME')||''
+            teacherList: [] as User,
         }
     },
     actions: {
@@ -17,33 +17,19 @@ export const studentInfoStore = defineStore('studentInfo', {
         async getTeacherList(){
             try{
                 let result:any = await reqGetTeacherList()
-                this.isStart = true
-                let list = result.data.data.teachers
                 this.teacherList = result.data.data.teachers
-                this.teacherList.forEach((item:any)=> {
-                    Object.assign(item,{remaining:`${item.total-item.count}`})
-                })
             }catch(error:any){
-                ElMessage.error(error.message)
+                ElMessageBox.alert(error.message, 'Tips', {
+                    confirmButtonText: 'OK'
+                  })
             }
         },
 
         //选择导师
-        async selectTutor(tid:number){
+        async selectTutor(tid:any){
             try{
                 let result:any = await reqSelectTutor(tid)
-                sessionStorage.setItem('TEACHERNAME',result.data.data.user.teacherName)
-                this.teacherName = sessionStorage.getItem('TEACHERNAME')||''
-                this.isChecked = true
-                ElMessageBox.alert(`选择成功,您的导师为${this.teacherName}!`, 'Success', {
-                    confirmButtonText: 'OK',
-                    callback: (action: Action) => {
-                        ElMessage({
-                            type: 'success',
-                            message: `您的导师 ${this.teacherName}`,
-                        })
-                    },
-                })
+                userInfo.user = result.data.data.user
             }catch(error:any){
                 return Promise.reject(new Error(error.message))
             }

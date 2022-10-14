@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang='ts'>
-    import { ref, defineEmits, toRaw, toRefs, watch, defineProps } from 'vue'
+    import { ref, defineEmits, toRaw, watch, defineProps } from 'vue'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import { Check, Delete } from '@element-plus/icons-vue'
     import * as XLSX from 'xlsx'

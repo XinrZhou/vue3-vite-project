@@ -1,8 +1,9 @@
 import {request} from '@/api/http'
 import axios from 'axios'
+import { User } from '@/types/type'
  
 // 登录
-export function reqGetLogin(data:any) {
+export function reqGetLogin(data:User) {
     return request({
       url: '/login',
       data,
