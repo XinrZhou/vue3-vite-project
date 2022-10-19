@@ -5,24 +5,20 @@
                 <el-row>
                     <el-col :span="10">
                         <div style="text-align: center;margin-top:20px;">
-                            <el-progress type="dashboard" :percentage="percent2" :width="150"
-                                :status="percent2==100?'success':''" v-show="activeName == 'first'">
+                            <el-progress type="dashboard" :percentage="percent" :width="150"
+                                :status="percent==100?'success':''">
                                 <template #default="{length}">
-                                    <span class="percentage-label">我的学生</span>
+                                    <span class="percentage-label">
+                                        {{progressName}}</span>
                                     <br><br>
-                                    <span
-                                        class="percentage-value">{{userInfo.user.count}}/{{(userInfo.user.total)}}</span>
+                                    <span class="percentage-value" v-show="activeName=='first'">
+                                        {{userInfo.user.count}}/{{(userInfo.user.total)}}
+                                    </span>
+                                    <span class="percentage-value" v-show="activeName=='second'">
+                                        {{tableData3.length-tableData1.length}}/{{(tableData3.length)}}
+                                    </span>
                                 </template>
-                            </el-progress>
-                            <el-progress type="dashboard" :percentage="percent1" :width="150"
-                                :status="percent1==100?'success':''" v-show="activeName == 'second'">
-                                <template #default="{length}">
-                                    <span class="percentage-label">完成率</span>
-                                    <br><br>
-                                    <span
-                                        class="percentage-value">{{tableData3.length-tableData1.length}}/{{(tableData3.length)}}</span>
-                                </template>
-                            </el-progress> <br>
+                            </el-progress><br>
                             <el-button type="primary" @click="exportTable" v-show="activeName == 'second'">
                                 导出毕设学生表格<el-icon class="el-icon--right">
                                     <Share />
@@ -53,10 +49,11 @@
                                         <el-icon>
                                             <InfoFilled />
                                         </el-icon>
-                                        <span>未选学生</span>
+                                        <span>数据统计</span>
                                     </span>
                                 </template>
                                 <div class="table-span">
+                                    <span style="font-size: large;">未选学生名单</span><br>
                                     <span v-for="(t,index) in tableData1" :key="index">
                                         {{t.name}},
                                     </span>
@@ -71,56 +68,48 @@
 </template>
 
 <script lang="ts" setup>
-    import moment from "moment";
+    import moment from "moment"
     import { User } from '@/types/type'
     import FileSaver from 'file-saver'
-    import * as XLSX from 'xlsx';
-    import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+    import * as XLSX from 'xlsx'
+    import { ref, computed, onMounted, onBeforeUnmount,watch } from 'vue'
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
     import { ElMessage, ElMessageBox } from 'element-plus'
     import type { TabsPaneContext } from 'element-plus'
     import { Link, StarFilled, Share, InfoFilled } from '@element-plus/icons-vue'
 
-    let dialogFormVisible = ref(false)
-    let activeName = ref('first')
     let userInfo = userInfoStore()
     let teacherInfo = teacherInfoStore()
+    let dialogFormVisible = ref(false)
+    let activeName = ref('first')
+    let progressName = ref('我的学生')
 
     teacherInfo.getAllStudent()
     teacherInfo.getUnCheckedStuent()
     teacherInfo.getStudent()
     let tableData1 = computed(() => teacherInfo.unSelectedList)
-    let tableData2 = computed(() => teacherInfo.studentList)
     let tableData3 = computed(() => teacherInfo.allStudentList)
+    let tableData2 = computed(() => teacherInfo.studentList)
+    let user = computed(()=>userInfo.user)
     let rowData = ref([]) as any
-    let percent1 = ref(0)
-    let percent2 = ref(0)
-
-    let timer1 = setInterval(() => {
-        percent1.value = Number((Number(tableData3.value.length - tableData1.value.length) / Number(tableData3.value.length)).toFixed(3)) * 100
-    }, 1000)
-    let timer2 = setInterval(() => {
-        if (userInfo.user.count && userInfo.user.total) {
-            percent2.value = Number((Number(userInfo.user.count) / Number(userInfo.user.total)).toFixed(3)) * 100
-        }
-    }, 1000)
-
-
-    onBeforeUnmount(() => {
-        window.clearInterval(timer1)
-        window.clearInterval(timer2)
+    let percent = ref(0)
+    
+    watch(user,()=>{
+        percent.value = Number((Number(user.value.count) / Number(user.value.total)).toFixed(3)) * 100
     })
-
+    
     const handleClick = (tab: TabsPaneContext, event: Event) => {
-        console.log()
         if (tab.props.name == 'second') {
             activeName.value = 'second'
+            progressName.value = '完成率'
+            percent.value = Number((Number(tableData3.value.length - tableData1.value.length) / Number(tableData3.value.length)).toFixed(3)) * 100
         } else {
             activeName.value = 'first'
+            progressName.value = '我的学生'
+            percent.value = Number((Number(user.value.count) / Number(user.value.total)).toFixed(3)) * 100
         }
     }
-
 
     //导出表格数据
     let exportTable = (() => {
