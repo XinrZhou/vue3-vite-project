@@ -3,8 +3,8 @@
         <el-row>
             <el-col :span="10" >
                 <div style="text-align: center;margin-top:20px;">
-                    <el-progress type="dashboard" :percentage="activeName=='first'?percent1:percent2" :width="150"
-                        :status="percent1==100?'success':''">
+                    <el-progress type="dashboard" :percentage="activeName=='first'?percentMyStudent:percentAll" :width="150"
+                        :status="percent==100?'success':''">
                         <template #default="{length}">
                             <span class="percentage-label">
                                 统计</span>
@@ -64,6 +64,7 @@
     import { userInfoStore } from '@/store/userInfo'
     import { teacherInfoStore } from '@/store/teacherInfo'
     import { ElMessage, ElMessageBox } from 'element-plus'
+    import { TabsPaneContext } from 'element-plus'
     import { StarFilled, Share,Loading } from '@element-plus/icons-vue'
     import Export from '@/views/teacher/Export.vue'
 
@@ -77,15 +78,17 @@
     let allStudentC = computed(() => teacherInfo.allStudentList)
     let unselectedC = computed(() => teacherInfo.unSelectedList)
     let isShow = ref(false)
-    let percent1 = ref(0)
-    let percent2 = ref(0)
+    let percentMyStudent = ref(0)
+    let percentAll = ref(0)
+    let percent = ref(0)
 
-    watch(allStudentC, () => {
-        percent2.value = Number((Number(allStudentC.value.length - unselectedC.value.length) / Number(allStudentC.value.length)).toFixed(3)) * 100
+    watch([allStudentC,unselectedC], () => {
+        computePercent()
     })
 
     watch(userC,()=>{
-        percent1.value = Number((Number(userC.value.count) / Number(userC.value.total)).toFixed(3)) * 100
+        percentMyStudent.value = Number((Number(userC.value.count) / Number(userC.value.total)).toFixed(3)) * 100
+        percent.value = percentMyStudent.value
     })
 
     const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -94,6 +97,15 @@
                 teacherInfo.getAllStudent()
                 teacherInfo.getUnCheckedStuent()
             }
+            percent.value = percentAll.value
+        }else{
+            percent.value = percentMyStudent.value
+        }
+    }
+
+    let computePercent = ()=>{
+        if(allStudentC.value.length && unselectedC.value.length){
+            percentAll.value = Number((Number(allStudentC.value.length - unselectedC.value.length) / Number(allStudentC.value.length)).toFixed(3)) * 100
         }
     }
 </script>
