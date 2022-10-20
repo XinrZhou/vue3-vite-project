@@ -64,13 +64,7 @@
                         status.value = 3
                         ElMessageBox.alert(`选择成功,您的导师为<span style="color:red">${user.name}</span>老师!`, 'Success', {
                             confirmButtonText: 'OK',
-                            dangerouslyUseHTMLString: true,
-                            callback: (action: any) => {
-                                ElMessage({
-                                    type: 'success',
-                                    message: `您的导师 ${user.name}`,
-                                })
-                            },
+                            dangerouslyUseHTMLString: true
                         })
                     }
                 } catch (error: any) {
