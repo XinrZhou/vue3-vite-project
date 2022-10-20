@@ -9,7 +9,6 @@ export const teacherInfoStore = defineStore('teacherInfo', {
             unSelectedList: [] as User[],
             studentList: [] as User[],
             allStudentList: [] as User[],
-            isOk:false
         }
     },
     actions: {

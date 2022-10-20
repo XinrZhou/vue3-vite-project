@@ -16,15 +16,15 @@
     import { Share} from '@element-plus/icons-vue'
 
     let teacherInfo = teacherInfoStore()
-    let tableData3 = computed(() => teacherInfo.allStudentList)
+    let allStudentC = computed(() => teacherInfo.allStudentList)
     let rowData = ref([]) as any
 
     let exportTable = (() => {
         let tableData = [
             ['#', '学号', '姓名', '导师']
         ]
-        tableData3.value.forEach((item: any, index: any) => {
-            if (tableData3.value) {
+        allStudentC.value.forEach((item: any, index: any) => {
+            if (allStudentC.value) {
                 rowData.value = [
                     index + 1,
                     item.number,
