@@ -37,7 +37,6 @@ export const teacherInfoStore = defineStore('teacherInfo', {
             try{
                 let result:any = await reqGetAllStudent()
                 this.allStudentList = result.data.data.students
-                this.isOk = true
             }catch(error:any){
                 ElMessage.error(error.message)
             }
