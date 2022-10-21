@@ -31,6 +31,7 @@ export const userInfoStore = defineStore('userInfo', {
                         break;
                 }
             } catch (error: any) {
+                this.showResetPassword = false
                 ElMessage.error(error.message)
                 return Promise.reject(new Error(error.message))
             }
@@ -40,7 +41,7 @@ export const userInfoStore = defineStore('userInfo', {
         async changePwd(pwd: string) {
             try {
                 let result: any = await reqChangePwd(pwd)
-                ElMessageBox.alert(`您的新密码为${pwd}`, 'Success!', {
+                ElMessageBox.alert(`新密码：${pwd}`, 'Success!', {
                     confirmButtonText: 'OK',
                     callback: (action: any) => {
                         ElMessage({

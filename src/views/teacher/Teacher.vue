@@ -3,8 +3,7 @@
         <el-row>
             <el-col :span="10" >
                 <div style="text-align: center;margin-top:20px;">
-                    <el-progress type="dashboard" :percentage="activeName=='first'?percentMyStudent:percentAll" :width="150"
-                        :status="percent==100?'success':''">
+                    <el-progress type="dashboard" :percentage="activeName=='first'?percentMyStudent:percentAll" :width="150">
                         <template #default="{length}">
                             <span class="percentage-label">
                                 统计</span>
@@ -80,7 +79,6 @@
     let isShow = ref(false)
     let percentMyStudent = ref(0)
     let percentAll = ref(0)
-    let percent = ref(0)
 
     watch([allStudentC,unselectedC], () => {
         computePercent()
@@ -88,7 +86,6 @@
 
     watch(userC,()=>{
         percentMyStudent.value = Number((Number(userC.value.count) / Number(userC.value.total)).toFixed(3)) * 100
-        percent.value = percentMyStudent.value
     })
 
     const handleClick = (tab: TabsPaneContext, event: Event) => {
@@ -97,14 +94,11 @@
                 teacherInfo.getAllStudent()
                 teacherInfo.getUnCheckedStuent()
             }
-            percent.value = percentAll.value
-        }else{
-            percent.value = percentMyStudent.value
         }
     }
 
     let computePercent = ()=>{
-        if(allStudentC.value.length && unselectedC.value.length){
+        if(allStudentC.value.length!=0 && unselectedC.value.length!=0){
             percentAll.value = Number((Number(allStudentC.value.length - unselectedC.value.length) / Number(allStudentC.value.length)).toFixed(3)) * 100
         }
     }
